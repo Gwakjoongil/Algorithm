@@ -1,0 +1,87 @@
+#include <string>
+#include <vector>
+#include <algorithm>
+#include <queue>
+#include <iostream>
+using namespace std;
+
+int main() {
+	int n, m;
+	vector<vector<int>> vec;
+	vector<int> tmpvec;
+	int tmp;
+	cin >> m >> n;
+
+	//vector에 값 넣기(n 행 m 열)
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < m; j++) {
+			cin >> tmp;
+			tmpvec.push_back(tmp);
+		}
+		vec.push_back(tmpvec);
+		tmpvec.clear();
+	}
+
+	//상하좌우
+	int nx[4] = { 1,0,-1,0 };
+	int ny[4] = { 0,1,0,-1 };
+
+	//현재 좌표
+	int cx, cy;
+
+	queue<pair<int, int>> q;
+
+	//1이 있는 위치 큐에 삽입
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < m; j++) {
+			if (vec[i][j] == 1) {
+				q.push(make_pair(i, j));
+			}
+		}
+	}
+
+	//1이 없으면 불가
+	if (q.size() == 0)
+	{
+		cout << -1;
+		return 0;
+	}
+	
+
+	int count = 0;
+	int qsize;
+	//BFS 수행
+	while (!q.empty()) {
+		qsize = q.size(); 
+		//큐에 있는 만큼 다 수행돼야 1번 수행된 것
+		for(int i = 0; i < qsize; i++) {
+			if (!q.empty()) {
+				cx = q.front().first;
+				cy = q.front().second;
+			}
+			for (int j = 0; j < 4; j++) {
+				if (cx + nx[j] >= 0 && cx + nx[j] < n
+					&& cy + ny[j] >= 0 && cy + ny[j] < m
+					&& vec[cx + nx[j]][cy + ny[j]] == 0) {
+					vec[cx + nx[j]][cy + ny[j]] = 1;
+					q.push(make_pair(cx + nx[j], cy + ny[j]));
+				}
+			}
+			q.pop();
+		}
+		
+		if(!q.empty())
+			count++;
+	}
+
+	for (int i = 0; i < vec.size(); i++) {
+		if (find(vec[i].begin(), vec[i].end(), 0) != vec[i].end()) {
+			cout << -1;
+			return 0;
+		}
+	}
+
+	cout << count;
+
+	return 0;
+}
