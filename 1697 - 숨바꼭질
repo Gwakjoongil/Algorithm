@@ -1,0 +1,44 @@
+#include <string>
+#include <vector>
+#include <algorithm>
+#include <queue>
+#include <iostream>
+using namespace std;
+
+int main() {
+	
+	int n, k;
+
+	cin >> n >> k;
+
+	queue<pair<int, int>> q;
+
+	int count = 0;
+	
+	int cn, cc;
+	int visit[100001] = { 0 };
+	q.push(make_pair(n, count));
+	visit[n] = 1;
+	while (!q.empty()) {
+		cn = q.front().first;
+		cc = q.front().second; q.pop();
+
+		if (cn == k) {
+			cout << cc;
+			return 0;
+		}
+
+		int next[3] = { cn + 1, cn * 2, cn - 1 };
+
+		for (int i = 0; i < 3; i++) {
+			if (next[i] >= 0 && next[i] < 100001 && visit[next[i]] == 0) {
+				q.push(make_pair(next[i], cc + 1));
+				visit[next[i]] = 1;
+				//cout << next[i] << " ";
+			}
+		}
+
+
+	}
+	return 0;
+}
