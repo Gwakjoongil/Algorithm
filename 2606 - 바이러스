@@ -1,0 +1,54 @@
+//BFS
+#include <iostream>
+#include <queue>
+#include <vector>
+#include <algorithm>
+#include <string>
+using namespace std;
+
+int main() {
+	int n, m;
+
+	cin >> n >> m;
+
+	vector<vector<int>> vec(n + 1);
+
+	int tmpa, tmpb;
+
+	for (int i = 0; i < m; i++) {
+		cin >> tmpa >> tmpb;
+		vec[tmpa].push_back(tmpb);
+		vec[tmpb].push_back(tmpa);
+	}
+
+	/*for (int i = 0; i < vec.size(); i++) {
+		sort(vec[i].begin(), vec[i].end());
+	}*/
+	
+	int visit[101] = { 0 };
+	visit[1] = 1;
+	queue<int> q;
+
+	q.push(1);
+	int cn, count;
+	int next;
+	vector<int> cnt;
+	while (!q.empty()) {
+		cn = q.front();
+		q.pop();
+
+		for (int i = 0; i < vec[cn].size(); i++) {
+			next = vec[cn][i];
+			if (visit[vec[cn][i]] == 0) {
+				//cout << vec[cn][i] << " ";
+				q.push(next);
+				cnt.push_back(next);
+				visit[vec[cn][i]] = 1;
+			}
+		}
+	}
+
+	cout << cnt.size();
+
+	return 0;
+}
