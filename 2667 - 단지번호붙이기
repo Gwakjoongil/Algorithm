@@ -1,0 +1,74 @@
+//BFS
+#include <iostream>
+#include <queue>
+#include <vector>
+#include <algorithm>
+#include <string>
+using namespace std;
+
+int main() {
+	
+	queue< pair<int, int>> q;
+	int visit[26][26] = { 0 };
+
+	vector<string> vec;
+	int n;
+	cin >> n;
+	string tmp;
+	for (int i = 0; i < n; i++) {
+		cin >> tmp;
+		vec.push_back(tmp);
+	}
+
+
+	int nx[4] = { 0,1,0,-1 };
+	int ny[4] = { 1,0,-1,0 };
+
+	
+
+	int cx, cy, count;
+	vector<int> ansCount;
+
+	int danCount = 0;
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n; j++) {
+			
+			if (vec[i][j] != '0' && visit[i][j] != 1) {
+				danCount++;
+				q.push(make_pair(i, j));
+				visit[i][j] = 1;
+				count = 1;
+			}
+			else {
+				continue;
+			}
+
+
+			while (!q.empty()) {
+				cx = q.front().first;
+				cy = q.front().second; q.pop();
+
+				for (int k = 0; k < 4; k++) {
+					if (cx + nx[k] >= 0 && cx + nx[k] < n
+						&& cy + ny[k] >= 0 && cy + ny[k] < n
+						&& visit[cx + nx[k]][cy + ny[k]] == 0
+						&& vec[cx + nx[k]][cy + ny[k]] == '1') {
+						q.push(make_pair(cx + nx[k], cy + ny[k]));
+						visit[cx + nx[k]][cy + ny[k]] = 1;
+						count++;
+					}
+				}
+			}
+			ansCount.push_back(count);
+		}
+	}
+	
+	sort(ansCount.begin(), ansCount.end());
+	cout << danCount << endl;
+	for (int i = 0; i < ansCount.size(); i++) {
+		cout << ansCount[i] << endl;
+	}
+	
+
+	return 0;
+}
