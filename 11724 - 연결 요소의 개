@@ -1,0 +1,59 @@
+#include <string>
+#include <vector>
+#include <algorithm>
+#include <queue>
+#include <iostream>
+using namespace std;
+
+int main() {
+
+	int n, m;
+	cin >> n >> m;
+	vector<vector<int>> vec(n + 1);
+	int u, v;
+	queue<int> q;
+
+	//인접 리스트 생성
+	for (int i = 0; i < m; i++) {
+		cin >> u >> v;
+		vec[u].push_back(v);
+		vec[v].push_back(u);
+	}
+
+	//요소 정렬
+	for (int i = 1; i <= n; i++) {
+		sort(vec[i].begin(), vec[i].end());
+	}
+
+	
+
+	int cur;
+	int count = 0;
+	int visit[1001] = { 0 };
+	//모든 노드 돌기
+	for (int i = 1; i <= n; i++) {
+		//그 노드가 방문하지 않은 노드라면 수행
+		if (visit[i] == 0) {
+			count++;
+			q.push(i);
+			visit[i] = 1;
+		}
+		else continue;
+
+		//BFS
+		while (!q.empty()) {
+			cur = q.front(); q.pop();
+			for (int i = 0; i < vec[cur].size(); i++) {
+				int next = vec[cur][i];
+				if (visit[next] == 0) {
+					visit[next] = 1;
+					q.push(next);
+				}
+			}
+		}
+	}
+
+	cout << count;
+
+	return 0;
+}
