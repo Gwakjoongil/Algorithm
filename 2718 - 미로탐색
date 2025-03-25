@@ -1,0 +1,71 @@
+//BFS 기본
+#include <iostream>
+#include <queue>
+#include <vector>
+#include <algorithm>
+#include <string>
+using namespace std;
+
+int MinCount(int n, int m, vector<string> maps) {
+	vector<int> answer;
+	int nx[4] = { 1,0,-1,0 };
+	int ny[4] = { 0,1,0,-1 };
+
+	int cx = 0;
+	int cy = 0;
+
+	int visited[101][101] = { 0 };
+
+	visited[0][0] = 1;
+	int count = 1;
+	queue<pair<int, pair<int,int>>> q;
+
+	q.push(make_pair(count, make_pair(cx,cy)));
+
+	while (!q.empty()) {
+		count = q.front().first;
+		cx = q.front().second.first;
+		cy = q.front().second.second; q.pop();
+
+		//cout << cx << " " << cy << endl;
+
+		if (cx == n - 1 && cy == m - 1) {
+			answer.push_back(count);
+			continue;
+		}
+
+		for (int i = 0; i < 4; i++) {
+			if (cx + nx[i] >= 0 && cx + nx[i] < n
+				&& cy + ny[i] >= 0 && cy + ny[i] < m) {
+				if (visited[cx + nx[i]][cy + ny[i]] == 0
+					&& maps[cx + nx[i]][cy + ny[i]] == '1') {
+					//cout << maps[cx + nx[i]][cy + ny[i]] << " " << visited[cx + nx[i]][cy + ny[i]] << endl;
+					q.push(make_pair(count + 1, make_pair(cx + nx[i], cy + ny[i])));
+					visited[cx + nx[i]][cy + ny[i]] = 1;
+				}
+			}
+		}
+		//cout << q.front().first;
+	}
+
+	if (answer.size() > 0) {
+		int ans = *min_element(answer.begin(), answer.end());
+		return ans;
+	}
+
+	return 0;
+}
+
+int main() {
+	int n, m;
+	vector<string> maps;
+	string map;
+
+	cin >> n >> m;
+	for (int i = 0; i < n; i++) {
+		cin >> map;
+		maps.push_back(map);
+	}
+	cout << MinCount(n, m, maps);
+	 return 0;
+}
