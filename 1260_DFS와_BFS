@@ -1,0 +1,71 @@
+//DFS - 재귀, BFS - Queue
+#include <string>
+#include <vector>
+#include <algorithm>
+#include <iostream>
+#include <stack>
+#include <queue>
+using namespace std;
+//DFS를 위한 visit
+vector<bool> visit(1001);
+void DFS(int n, int m, int v, vector<vector<int>> points) {
+	//현재 노드 탐색 완료
+	visit[v] = true;
+	cout << v<<" ";
+	for (int i = 0; i < points[v].size(); i++) {
+		//인접 리스트의 다음 열 탐색
+		int next = points[v][i];
+		//그 열이 방문하지 않은 노드라면 탐생
+		if (!visit[next]) {
+			//재귀 호출
+			DFS(n, m, next, points);			
+		}
+	}
+}
+void BFS(int n, int m, int v, vector<vector<int>> points) {
+	vector<bool> visited(1001);
+	queue<int> q;
+	q.push(v);
+	//처음 노드 방문 완료
+	visited[v] = true;
+	int next;
+
+	//모든 노드 탐색까지 반복
+	while (!q.empty()) {
+		next = q.front(); q.pop();
+		cout << next << " ";
+
+		for (int i = 0; i < points[next].size(); i++) {
+			int nextpoint = points[next][i];
+			//다음 지점이 탐색되지 않았다면 탐색ㄱㄱ
+			if (!visited[nextpoint]) {
+				q.push(nextpoint);
+				//다음 노드 탐색 완료
+				visited[nextpoint] = true;
+			}
+		}
+	}
+}
+
+int main() {
+	int n, m, v;
+	cin >> n >> m >> v;
+	vector<int> answer;
+	vector<vector<int>> points(n + 1);
+	int tmpa, tmpb;
+	//인접 리스트 생성
+	for (int i = 0; i < m; i++) {
+		cin >> tmpa >> tmpb;
+		points[tmpa].push_back(tmpb);
+		points[tmpb].push_back(tmpa);
+	}
+	for (int i = 0; i < points.size(); i++) {
+		sort(points[i].begin(), points[i].end());
+	}
+	DFS(n, m, v, points);
+
+	visit.clear();
+	cout << endl;
+	BFS(n, m, v, points);
+	 return 0;
+}
