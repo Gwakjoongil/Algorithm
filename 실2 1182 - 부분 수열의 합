@@ -1,0 +1,38 @@
+#include <iostream>
+#include <algorithm>
+#include <vector>
+
+
+using namespace std;
+
+vector<int> vec;
+int n, s;
+int cnt = 0;
+
+void BackTracking(int depth, int sum) {
+	
+	if (depth == n) return;
+	
+	if (sum + vec[depth] == s) {
+		cnt++;
+	}
+
+	BackTracking(depth + 1, sum + vec[depth]); // 현재 원소 포함
+	BackTracking(depth + 1, sum);             // 현재 원소 미포함
+}
+
+int main() {
+	cin >> n >> s;
+
+	int tmp;
+	for (int i = 0; i < n; i++) {
+		cin >> tmp;
+		vec.push_back(tmp);
+	}
+
+	BackTracking(0, 0);
+
+	cout << cnt;
+
+	return 0;
+}
