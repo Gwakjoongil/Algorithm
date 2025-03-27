@@ -1,0 +1,49 @@
+//열, 대각 우측 하단, 상단 어케 생각해내야할지..쩝..
+//abs로 했다가 안돼서 유튭보고 k-i+n-1로 하니깐 됨..ㅋ
+
+#include <iostream>
+#include <set>
+#include <algorithm>
+#include <vector>
+#include <cstdlib>
+
+
+using namespace std;
+int count = 0;
+int n, ans = 0;
+bool col[40] = { 0 };
+bool rd[40] = { 0 };
+bool ru[40] = { 0 };
+
+void BackTracking(int k) {
+	if (k == n) {
+		ans++;
+	}
+
+	for (int i = 0; i < n; i++) {
+		if (!(col[i] == 0 && rd[k - i+n-1] == 0 && ru[i + k] == 0)) {
+			continue;
+		}
+		col[i] = true;
+		rd[k - i + n - 1] = true;
+		ru[i + k] = true;
+		BackTracking(k + 1);
+		col[i] = false;
+		rd[k - i + n - 1] = false;
+		ru[i + k] = false;
+
+	}
+
+
+}
+
+int main() {
+
+	cin >> n;
+
+	BackTracking(0);
+
+	cout << ans;
+
+	return 0;
+}
