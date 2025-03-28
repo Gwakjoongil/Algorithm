@@ -1,0 +1,57 @@
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <set>
+using namespace std;
+
+int visit[50] = { 0 };
+vector<int> vec;
+vector<int> tmp;
+vector<int> ans;
+set<vector<int>> s;
+int n, m;
+int cnt = 0;
+
+void checknum() {
+
+	for (int i = 0; i < vec.size(); i++) {
+		if (cnt == m) {
+			for (int j = 0; j < cnt; j++) {
+				ans.push_back(tmp[j]);				
+			}
+			sort(ans.begin(), ans.end());
+			s.insert(ans);
+			ans.clear();
+			return;
+		}
+		
+		if (visit[vec[i]] == 0) {
+			tmp.push_back(vec[i]);
+			visit[vec[i]] = 1;
+			cnt++;
+			checknum();
+			tmp.pop_back();
+			visit[vec[i]] = 0;
+			cnt--;
+		}
+	}
+}
+
+
+int main() {
+	cin >> n >> m;
+	for (int i = 1; i <= n; i++) {
+		vec.push_back(i);
+	}
+	
+	checknum();
+
+	for (auto it = s.begin(); it != s.end(); it++) {
+		for (int j = 0; j < (*it).size(); j++) {
+			cout << (*it)[j] << " ";
+		}
+		cout << "\n";
+	}
+
+	return 0;
+}
