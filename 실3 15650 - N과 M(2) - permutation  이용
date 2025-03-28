@@ -1,0 +1,37 @@
+#include <iostream>
+#include <algorithm>
+#include <vector>
+#include <set>
+using namespace std;
+
+int main() {
+	
+	int n, m;
+	cin >> n >> m;
+	vector<int> vec;
+
+	for (int i = 1; i <= n; i++) {
+		vec.push_back(i);
+	}
+	
+	set<vector<int>> s;
+	vector<int> tmp;
+	do {
+		for (int i = 0; i < m; i++) {
+			tmp.push_back(vec[i]);
+		}
+		sort(tmp.begin(), tmp.end());
+		s.insert(tmp);
+		tmp.clear();
+	} while (next_permutation(vec.begin(), vec.end()));
+
+	
+	for (auto it = s.begin(); it != s.end();it++) {
+		for (int j = 0; j < (*it).size(); j++) {
+			cout << (*it)[j] << " ";
+		}
+		cout << "\n";
+	}
+
+	return 0;
+}
