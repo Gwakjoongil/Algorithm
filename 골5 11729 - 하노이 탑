@@ -1,4 +1,6 @@
 /*
+https://www.youtube.com/watch?v=Xu5GC_7YIeQ&t=33s
+- 설명 개잘함
 이 문제는 결국 같은 행동 반복이다.
 즉, n번째 접시를 A-> C로 옮기는 게 최종 목표
 1. 그러기 위해선 1 ~ n-1까지 A->B로 옮겨야 함
