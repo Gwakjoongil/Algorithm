@@ -1,0 +1,91 @@
+//규칙을 마지막 inorder 하면서 찾은 내가 ㄹㅈㄷ
+//앞에꺼 개 어거지로 했는데 맞김 함ㅋㅋㅋㅋㅋㅋ
+//어쨌든 ㅈㄴ간단한 문제였다....
+//주어지는 값 들어가면서 순서에 맞춰 출력하면 되는 거였음..(easy...)
+
+#include <iostream>
+#include <map>
+#include <vector>
+#include <string>
+
+using namespace std;
+vector<char> preorder;
+vector<char> inorder;
+vector<char> postorder;
+map<char, int> visit;
+map<char, vector<char>> m;
+
+
+
+void preOrder(char n) {
+	/*for (int i = 0; i < m[n].size(); i++) {
+		if (m[n][i] == '.') continue;
+		cout << m[n][i];
+		preOrder(m[n][i]);
+	}*/
+
+
+	cout << n;
+	if (m[n][0] != '.') {
+		preOrder(m[n][0]);
+	}
+	if (m[n][1] != '.') {
+		preOrder(m[n][1]);
+	}
+}
+
+void postOrder(char n) {
+	/*for (int i = 0; i < m[n].size(); i++) {
+		if (m[n][i] != '.') {
+			postOrder(m[n][i]);
+			cout << m[n][i];
+		}
+	}*/
+
+
+	if (m[n][0] != '.') {
+		postOrder(m[n][0]);
+	}
+	if (m[n][1] != '.') {
+		postOrder(m[n][1]);
+	}
+	cout << n;
+
+
+
+}
+void inOrder(char n) {
+	
+	if (m[n][0] != '.') {
+		inOrder(m[n][0]);
+		
+	}
+	cout << n;
+	if (m[n][1] != '.') {
+		inOrder(m[n][1]);
+	}
+	
+
+}
+
+int main() {
+	int n;
+	cin >> n;
+	char top, left, right;
+
+	for (int i = 0; i < n; i++) {
+		cin >> top >> left >> right;
+		m[top].push_back(left);
+		m[top].push_back(right);
+	}
+	preOrder('A');
+	cout << "\n";
+	inOrder('A');
+	cout << "\n";
+	postOrder('A');
+
+
+
+
+	return 0;
+}
