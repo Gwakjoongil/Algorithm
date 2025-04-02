@@ -1,0 +1,72 @@
+//1단계인데 난이도 꽤 있었음..ㅠㅠ
+//오기부려서 풀긴함
+//상자 벡터 만들어서 층 비교하고 답 구하기~!
+
+#include <string>
+#include <vector>
+#include <algorithm>
+#include <iostream>
+using namespace std;
+
+int solution(int n, int w, int num) {
+    int answer = 0;
+    
+    vector<vector<int>> vec;
+    int tmpcount=0;
+    vector<int> tmpvec;
+    for(int i=1;i<=n;i++){
+        
+        tmpvec.push_back(i);
+        
+        if(tmpvec.size() == w){
+            if((i/w)%2 != 0)
+                vec.push_back(tmpvec);
+            else{
+                sort(tmpvec.begin(), tmpvec.end(), greater<int>());
+                vec.push_back(tmpvec);
+            }
+            tmpvec.clear();
+        }
+        else if(tmpvec.size() != w && i == n){            
+            int tmpval = w-tmpvec.size();
+            for(int j=0;j<tmpval;j++){
+                tmpvec.push_back(0);
+            }
+            
+            
+            if(((i/w)+1)%2 != 0){
+                sort(tmpvec.begin(), tmpvec.end(), greater<int>());
+                vec.push_back(tmpvec);
+            }
+            else{
+                sort(tmpvec.begin(), tmpvec.end());
+                vec.push_back(tmpvec);
+            }
+        }
+        
+    }
+    
+    int mycol, myrow;
+    for(int i=0;i<vec.size();i++){
+        if(find(vec[i].begin(), vec[i].end(), num) != vec[i].end()){
+            myrow = vec.size() - i; //현재 층
+            mycol = find(vec[i].begin(), vec[i].end(), num) - vec[i].begin(); 
+            //현재 가로 위치
+        }
+    }
+    
+    if(vec[vec.size()-1][mycol] == 0){
+        myrow--;
+    }
+    
+    
+    
+//     for(int i=0;i<vec.size();i++){
+//         for(int j=0;j<vec[i].size();j++){
+//             cout<<vec[i][j];
+//         }
+//         cout<<"\n";
+//     }
+    
+    return myrow;
+}
