@@ -1,0 +1,46 @@
+//이 문제는 DFS와 백트래킹의 짬뽕 문제
+//그냥 DFS로도 그냥 백트래킹으로도 풀 수 없음
+// DFS를 수행하며 원하는 값이 아니면 돌아가서 다시 조회해야 함
+
+#include <string>
+#include <vector>
+#include <algorithm>
+#include <queue>
+#include <iostream>
+using namespace std;
+vector<string> answer;
+vector<vector<string>> ticket;
+int visit[1000001] = {0};
+bool check = false;
+void dfs(string cur, int count){
+    if(count == ticket.size()){
+        check = true;
+    }
+    
+    answer.push_back(cur);
+    for(int i=0;i<ticket.size();i++){
+        if(visit[i] == 0 && cur == ticket[i][0]){
+            visit[i] = 1;
+            dfs(ticket[i][1], count+1);
+            
+            if(!check){
+            answer.pop_back();
+            visit[i] = 0;
+        }
+        }
+        
+    }
+    
+}
+
+vector<string> solution(vector<vector<string>> tickets) {
+    
+    
+    
+    ticket = tickets;
+    sort(ticket.begin(), ticket.end());
+    dfs("ICN", 0);
+    
+    
+    return answer;
+}
