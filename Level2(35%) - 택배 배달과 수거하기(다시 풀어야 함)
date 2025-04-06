@@ -1,0 +1,102 @@
+#include <string>
+#include <vector>
+#include <queue>
+#include <algorithm>
+#include <iostream>
+
+using namespace std;
+
+long long solution(int cap, int n, vector<int> deliveries, vector<int> pickups) {
+    long long answer = 0;
+    
+    long long tmpcnt=0;
+    int tmpi;
+    //거리가 모두 0이 될 때까지 반복
+    while(1){
+        tmpcnt=0;
+        
+        bool digit=true;
+        //더이상 배달, 수거할 곳이 없다면 끝내기
+        for(int i=0; i<deliveries.size();i++){
+            if(deliveries[i] != 0){
+                digit = false;
+            }
+            if(pickups[i] != 0){
+                digit = false;
+            }
+        }
+        if(digit == true){
+            break;
+        }
+        
+        //여기부터는 배달 or 수거할 애들 중 하나는 값이 있다는 거임
+        //즉, 배달할 애들을 검사하고, 배달할 애들이 없으면
+        //수거할 애들이 있는 거임
+        
+        
+        //배달할 애들이 있는지 검사
+        //만약 있다면 얼마나 있는지 확인
+        for(int i=0;i<deliveries.size();i++){
+            tmpcnt+=deliveries[i];
+            if(tmpcnt>=cap){
+                tmpcnt = cap;
+                break;
+            }
+        }
+        
+        //배달할 애들이 없다면
+        //수거할 애들이 있는지 검사(무조건 수거할 애들이 있음)
+        if(tmpcnt == 0){
+            int tcnt=0;
+            for(int i=0;i<pickups.size();i++){
+                
+                if(tmpcnt + pickups[i] >= cap){
+                    pickups[i] -= cap-tmpcnt;
+                    tmpcnt = cap;
+                    tcnt++;
+                    break;
+                }
+                else{
+                    tmpcnt += pickups[i];
+                    pickups[i] = 0;
+                    tcnt++;
+                }
+            }
+            answer+= tcnt*2;
+            
+        }
+        //배달 + 수거
+        else{
+            for(int i=0;i<deliveries.size();i++){
+                if(deliveries[i] - tmpcnt < 0){
+                    tmpcnt -= deliveries[i];
+                    deliveries[i] = 0;
+                }
+                else{
+                    deliveries[i]-=tmpcnt;
+                    tmpcnt=0;
+                }
+                answer++;
+                tmpi=i;
+                if(tmpcnt == 0){
+                    break;
+                }
+            }
+            for(int i=tmpi;i>=0;i--){
+                if(pickups[i] > 0 && tmpcnt < cap){
+                    if(tmpcnt + pickups[i] >= cap){
+                        pickups[i] -= cap-tmpcnt;
+                        tmpcnt = cap;
+                    }
+                    else{
+                        tmpcnt +=  pickups[i];
+                        pickups[i]=0;
+                    }
+                }
+                answer++;
+            }     
+        }
+    }
+    
+    return answer;
+}
