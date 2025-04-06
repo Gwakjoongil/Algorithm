@@ -1,0 +1,87 @@
+#include <string>
+#include <vector>
+#include <set>
+#include <iostream>
+#include <algorithm>
+using namespace std;
+
+long long solution(string expression) {
+    long long answer = 0;
+    vector<long long> tmpans;
+    vector<long long> numvec;
+    vector<char> exvec;
+    vector<long long> tmpnumvec;
+    vector<char> tmpexvec;
+    set<char> s;
+    long long from=0;
+    long long to = 0;
+    
+    string tmpstr;
+    
+    for(long long i=0;i<expression.length();i++){
+        to++;
+        if(expression[i] == '-' ||expression[i] == '*' || expression[i] == '+'){
+            s.insert(expression[i]);
+            exvec.push_back(expression[i]);
+            tmpstr = expression.substr(from,to);
+            numvec.push_back(stoi(tmpstr));
+            from=i+1;
+            to=0;
+        }
+        else if(i == expression.length()-1){
+            tmpstr = expression.substr(from,to);
+            numvec.push_back(stoi(tmpstr));
+        }
+    }
+    
+    for(auto it:s){
+        cout<< it<<" ";
+    }
+    cout<<endl;
+    vector<pair<long long, char>> exp;
+    long long count = 0;
+    for(auto it:s){
+        exp.push_back(make_pair(count++, it));
+    }
+    
+    
+    vector<long long> ans;
+    long long exsize;
+    do{
+        tmpnumvec = numvec;
+        tmpexvec = exvec;
+        exsize = tmpexvec.size();
+        for(long long i=0;i<exp.size();i++){
+            for(long long j=0;j<exsize;j++){
+                if(tmpexvec[j] == exp[i].second){
+                    switch(tmpexvec[j]){
+                        case '*':
+                            tmpnumvec[j] = tmpnumvec[j] * tmpnumvec[j+1];
+                            //cout<<tmpnumvec[j]<<" ";
+                            break;
+                        case '-':
+                            tmpnumvec[j] = tmpnumvec[j] - tmpnumvec[j+1];
+                            //cout<<tmpnumvec[j]<<" ";
+                            break;
+                        case '+':
+                            tmpnumvec[j] = tmpnumvec[j] + tmpnumvec[j+1];
+                            //cout<<tmpnumvec[j]<<" ";
+                            break;
+                    }
+                    tmpnumvec.erase(tmpnumvec.begin() + j+1);
+                    tmpexvec.erase(tmpexvec.begin()+j);
+                    exsize = tmpexvec.size();
+                    j=-1;
+                }
+            }
+        }
+        if(tmpnumvec[0] < 0){
+            tmpnumvec[0] *=-1;
+        }
+        tmpans.push_back(tmpnumvec[0]);
+    }while(next_permutation(exp.begin(), exp.end()));
+    
+    answer = *max_element(tmpans.begin(), tmpans.end());
+    
+    return answer;
+}
