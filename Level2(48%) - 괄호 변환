@@ -1,0 +1,109 @@
+//문제에서 하라는 대로만 짜면 성공함
+//단순 구현 문제
+#include <string>
+#include <vector>
+#include <iostream>
+using namespace std;
+
+string make_str(string str){
+    string ret="";
+    //1. 입력이 빈 문자열일 경우, 빈 문자열을 반환합니다.
+    if(str.length() == 0) return ret;
+    
+    int lcnt=0, rcnt=0;
+
+    if(str[0] == '(') lcnt++;
+    else rcnt++;
+    
+    
+    for(int i=1;i<str.length();i++){
+        if(str[i] == '(') lcnt++;
+        else rcnt++;
+        
+        if(lcnt == rcnt) break;
+    }
+    // cout<<lcnt<<" "<<rcnt;
+    // return ret;
+    
+    //2. 문자열 str을 두 "균형잡힌 괄호 문자열" u,v로 분리합니다.
+    //단, u는 "균형잡힌 괄호 문자열"로 더 이상 분리 불가능
+    //v는 빈 문자열이 될 수 있습니다.
+    string u,v;
+    for(int i=0;i<lcnt+rcnt;i++){
+        u+=str[i];
+    }
+    
+    for(int i=lcnt+rcnt;i<str.length();i++){
+        v+=str[i];
+    }
+    //cout<<u<<" "<<v<<endl;
+    //3. 문자열 u가 "올바른 괄호 문자열"이라면..
+    bool uchk=true;
+    for(int i=0;i<u.length();i++){
+        if(u[i] == '(') lcnt--;
+        else rcnt--;
+        
+        //올바르지 않음
+        if(rcnt < lcnt){
+            uchk=false;
+        }
+    }
+    
+    //올바른 문자열 : v에 대해 1단계부터 다시 수행
+    if(uchk){
+        string tmp;
+        tmp = make_str(v);
+        //수행한 결과 문자열을 u에 이어 붙인 후 반환합니다.
+        u += tmp;
+        return u;
+    }
+    //올바르지 않은 문자열 : 
+    else{
+        //4-1. 빈 문자열에 첫 번째 문자로 '('를 붙입니다.
+        string tmp = "(";
+        //4-2. 문자열 v에 대해 1단계부터 재귀적으로 수행한 결과
+        //문자열을 이어 붙입니다.
+        tmp += make_str(v);
+        //4-3. ')'를 다시 붙입니다.
+        tmp += ")";
+        //4-4. u의 첫, 마지막 문자 제거 후.. 
+        u.erase(u.begin()+0);
+        u.erase(u.begin()+u.length()-1);
+        
+        //나머지 문자열의 괄호 방향을 뒤집어서 
+        for(int i=0;i<u.length();i++){
+            if(u[i] == '(') u[i] = ')';
+            else if(u[i] == ')')  u[i] = '(';
+        }
+        
+        //tmp 뒤에 붙입니다.
+        tmp+=u;
+        return tmp;
+    }
+    
+    
+    //cout<<u<<endl<<v;
+    return u;
+}
+
+string solution(string p) {
+    string answer = "";
+    
+    int lcount=0, rcount=0;
+    bool chk=true;
+    for(int i=0;i<p.length();i++){
+        if(p[i] == '(') lcount++;
+        else rcount++;
+        
+        if(lcount < rcount) chk = false;
+    }
+    
+    
+    if(!chk){
+        return make_str(p);        
+    }
+    else return p;
+    
+    
+
+}
