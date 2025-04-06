@@ -1,3 +1,5 @@
+//for문 헷갈리지 말자
+//증감은 for문 끝나고 되는 거 왜 자꾸 까먹니..ㅋㅋ
 #include <string>
 #include <vector>
 #include <set>
@@ -71,6 +73,7 @@ long long solution(string expression) {
                     tmpnumvec.erase(tmpnumvec.begin() + j+1);
                     tmpexvec.erase(tmpexvec.begin()+j);
                     exsize = tmpexvec.size();
+                    //이거 때문에 한참 고생함ㅋㅋ
                     j=-1;
                 }
             }
