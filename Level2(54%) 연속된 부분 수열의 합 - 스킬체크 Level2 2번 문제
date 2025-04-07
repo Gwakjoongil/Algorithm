@@ -1,0 +1,46 @@
+//이 문제는 투 포인터 개념을 갖고 있어야 함
+//투포인터 기본 문제
+#include <string>
+#include <vector>
+#include <algorithm>
+#include <queue>
+#include <iostream>
+using namespace std;
+
+vector<int> solution(vector<int> sequence, int k) {
+    vector<int> answer;
+    queue<pair<int, int>> q;
+    int lidx= -1, ridx = -1;
+    int tmp=0;
+    int size = sequence.size();
+    while(lidx  <= ridx && ridx <size){
+        if(tmp < k){
+            tmp += sequence[++ridx];
+        }
+        else if(tmp>k){
+            tmp -= sequence[++lidx];
+        }
+        else if(tmp == k){
+            q.push(make_pair(lidx+1, ridx));
+            tmp += sequence[++ridx];
+        }
+    }
+    int stp = q.front().first;
+    int endp = q.front().second;
+    q.pop();
+    while(!q.empty()){
+        if(q.front().second - q.front().first >= endp - stp){
+            q.pop();
+        }
+        else{
+            stp = q.front().first;
+            endp = q.front().second;
+            q.pop();
+        }
+    }
+    answer.push_back(stp);
+    answer.push_back(endp);
+
+    
+    return answer;
+}
