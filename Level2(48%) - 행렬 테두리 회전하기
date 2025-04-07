@@ -1,0 +1,81 @@
+//단순 구현 문제
+//시간복잡도는 중요하지 않았음
+//이동 - 스왑 - 최소값 반복
+#include <string>
+#include <vector>
+#include <algorithm>
+#include <iostream>
+
+using namespace std;
+
+vector<int> solution(int rows, int columns, vector<vector<int>> queries) {
+    vector<int> answer;
+    
+    vector<vector<int>> vec;
+    vector<int> tmpvec;
+    int count=1;
+    for(int i=0;i<rows;i++){
+        for(int j=0;j<columns;j++){
+            tmpvec.push_back(count++);
+        }
+        vec.push_back(tmpvec);
+        tmpvec.clear();
+    }
+    
+    for(int i=0;i<queries.size();i++){
+        for(int j=0;j<queries[i].size();j++){
+            queries[i][j]-=1;
+        }
+    }
+    
+    int min=0;
+    //총 회전 수
+    for(int i=0;i<queries.size();i++){
+        int row = queries[i][2] - queries[i][0];
+        int col = queries[i][3] - queries[i][1];
+        int stx = queries[i][0], sty = queries[i][1];
+        tmpvec.push_back(vec[stx][sty]);
+        //왼 세로
+        for(int j=0;j<row;j++){
+            swap(vec[stx][sty], vec[stx+1][sty]);
+            tmpvec.push_back(vec[stx][sty]);
+            stx++;
+            
+        }
+        
+        //아 가로
+        for(int j=0;j<col;j++){
+            swap(vec[stx][sty], vec[stx][sty+1]);
+            tmpvec.push_back(vec[stx][sty]);
+            sty++;
+        }
+        
+        //오 세로        
+        for(int j=0;j<row;j++){
+            swap(vec[stx][sty], vec[stx-1][sty]);
+            tmpvec.push_back(vec[stx][sty]);
+            stx--;
+        }
+        
+        //위 가로        
+        for(int j=0;j<col-1;j++){
+            swap(vec[stx][sty], vec[stx][sty-1]);
+            tmpvec.push_back(vec[stx][sty]);
+            sty--;
+        }
+        
+        min = *min_element(tmpvec.begin(), tmpvec.end());
+        answer.push_back(min);
+        tmpvec.clear();
+    }
+    
+    // for(int i=0;i<vec.size();i++){
+    //     for(int j=0;j<vec[i].size();j++){
+    //         cout<<vec[i][j]<<" ";
+    //     }
+    //     cout<<endl;
+    // }
+    
+    
+    return answer;
+}
