@@ -1,0 +1,31 @@
+//쉬운 백트래킹 문제였음
+
+#include <string>
+#include <vector>
+#include <algorithm>
+#include <iostream>
+using namespace std;
+int cnt=0;
+void greedy(vector<int> numbers, int target, int sum, int depth, int idx){
+    
+    
+    if(depth == numbers.size()){
+        if(sum == target){
+            cnt++;
+        }
+        return;
+    }
+    
+    greedy(numbers, target, sum + numbers[idx+1], depth+1, idx+1);
+    greedy(numbers, target, sum - numbers[idx+1], depth+1, idx+1);
+}
+
+
+int solution(vector<int> numbers, int target) {
+    int answer = 0;
+    greedy(numbers, target, 0, 0, -1);
+        
+        
+        
+    return cnt;
+}
