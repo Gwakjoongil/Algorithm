@@ -1,0 +1,54 @@
+//평범한 투포인터 문제
+//모르면 못푸는 문제
+
+#include <string>
+#include <vector>
+#include <queue>
+#include <algorithm>
+#include <iostream>
+using namespace std;
+
+vector<int> solution(vector<int> sequence, int k) {
+    vector<int> answer;
+    int sum=0;
+    int lidx=-1, ridx=-1;
+    queue<pair<int, int>> q;
+    int size = sequence.size();
+    while(lidx <= ridx &&ridx<size){
+       
+        if(sum < k){
+            sum+=sequence[++ridx];
+        }
+        else if(sum > k){
+            sum-=sequence[++lidx];
+        }
+        else if(sum == k){
+            q.push(pair(lidx+1, ridx));
+            
+            //cout<<lidx+1<<" "<<ridx<<endl;
+            sum+=sequence[++ridx];
+        }
+    }
+    
+    
+    int tmpl= q.front().first;
+    int tmpr = q.front().second;
+    q.pop();
+    
+    int tmpsize =  q.size();
+    
+    for(int i=0;i<tmpsize;i++){
+        
+        if(q.front().second - q.front().first < tmpr - tmpl){
+            tmpl = q.front().first;
+            tmpr = q.front().second;
+        }
+        q.pop();
+        
+    }
+    
+    answer.push_back(tmpl);
+    answer.push_back(tmpr);
+    
+    return answer;
+}
