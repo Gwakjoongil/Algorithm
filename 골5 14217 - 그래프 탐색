@@ -1,0 +1,123 @@
+//이 문제는 처음에 인접리스트 + BFS로 접근했음
+//접근 자체는 맞았지만 각 노드에 대해 1까지 최소 거리 구하는 접근이 틀림(시간 초과)
+//핵심은 각 노드부터 1까지 최소 거리 == 1부터 각 노드까지 최소 거리
+//그리고 -1은 하나만 있는건 아니다....여러 개 있을 수 있다는 거 명심..
+
+#include <iostream>
+#include <vector>
+#include <string>
+#include <algorithm>
+#include <set>
+#include <queue>
+using namespace std;
+//도로는 만들 수도 없앨 수도 있음
+//만든 도로를 없앨 수도 있음
+//각 도시들이 수도에 도착하는데 방문하는 도시의 최소 횟수
+//초기 도시 상태 주어지고 정비계획 주어질 때
+//한 도로가 정비될 때마다 각 도시별로 수도를 방문하는 데 최소 방문 도시 출력
+int main() {
+	//n : 도시 개수
+	//m : 도로 개수
+	int n, m;
+	cin >> n >> m;
+
+	//m개 줄에는 두 도시가 주어짐
+	int fct, sct;
+	vector<pair<int, int>> city;
+	for (int i = 0; i < m; i++) {
+		cin >> fct >> sct;
+		city.push_back(make_pair(fct, sct));
+	}
+
+	//q : 도로 정비 계획에 들어가 있는 도로의 수
+	int q;
+	cin >> q;
+
+	//q개 줄에는 a, l, m이 주어짐
+	int a, l, p;
+	vector<pair<int, pair<int, int>>> remodel;
+	for (int i = 0; i < q; i++) {
+		cin >> a >> l >> p;
+		//a == 1이면 i,j를 잇는 도로를 만들고
+		//a == 2이면 i,j를 잇는 도로를 없앤다.
+		remodel.push_back(make_pair(a, make_pair(l, p)));
+	}
+
+
+	//수도는 1번 도시
+
+	//필요한 거
+	// - 인접 리스트 만들고 임시로 저장할 변수 만들기
+	vector<vector<int>> cityvec(n + 1);
+
+	for (int i = 0; i < m; i++) {
+		cityvec[city[i].first].push_back(city[i].second);
+		cityvec[city[i].second].push_back(city[i].first);
+	}
+
+
+	// - 총 q(다리 수정) * n(다리 개수)만큼 해야함
+	// - m번 반목해서 인접 리스트 복사하고 다리 만들거나 삭제하고
+	
+	vector<vector<int>> answer;
+	vector<vector<int>> tmpcity = cityvec;
+	//다리를 총 q번 수정함
+	for (int i = 0; i < q; i++) {
+		vector<int> tmpans(n);
+		//다리 추가
+		if (remodel[i].first == 1) {
+			tmpcity[remodel[i].second.first].push_back(remodel[i].second.second);
+			tmpcity[remodel[i].second.second].push_back(remodel[i].second.first);
+		}
+		//다리 제거
+		else if (remodel[i].first == 2) {
+			if (find(tmpcity[remodel[i].second.first].begin(), tmpcity[remodel[i].second.first].end(), remodel[i].second.second) != tmpcity[remodel[i].second.first].end()) {
+				int fidx = find(tmpcity[remodel[i].second.first].begin(), tmpcity[remodel[i].second.first].end(), remodel[i].second.second) - tmpcity[remodel[i].second.first].begin();
+				tmpcity[remodel[i].second.first].erase(tmpcity[remodel[i].second.first].begin() + fidx);
+			}
+
+			if (find(tmpcity[remodel[i].second.second].begin(), tmpcity[remodel[i].second.second].end(), remodel[i].second.first) != tmpcity[remodel[i].second.second].end()) {
+				int sidx = find(tmpcity[remodel[i].second.second].begin(), tmpcity[remodel[i].second.second].end(), remodel[i].second.first) - tmpcity[remodel[i].second.second].begin();
+				tmpcity[remodel[i].second.second].erase(tmpcity[remodel[i].second.second].begin() + sidx);
+			}
+		}
+		vector<int> visit(n + 1);
+		//목표 노드, 다음 노드, 지나간 횟수
+		queue<pair<int, int>> q;
+
+		//처음엔 1부터 시작 (1은 0이 나오게)
+		q.push(make_pair(1, 0));
+		visit[1] = 1;
+		int cx, cnt=0;
+		//각 노드부터 1까지 걸리는 최소 == 1부터 각 노드 최소 횟수
+		while (!q.empty()) {
+			cx = q.front().first;
+			cnt = q.front().second;
+			q.pop();
+
+			tmpans[cx-1] = cnt;
+			for (int k = 0; k < tmpcity[cx].size(); k++) {
+				if (visit[tmpcity[cx][k]] == 0) {
+					visit[tmpcity[cx][k]] = 1;
+					q.push(make_pair(tmpcity[cx][k], cnt + 1));
+				}
+			}
+		}
+		//수도 방문할 수 없으면 -1 출력
+		while (find(tmpans.begin() + 1, tmpans.end(), 0) != tmpans.end()) {
+			int idx = find(tmpans.begin() + 1, tmpans.end(), 0) - tmpans.begin();
+			tmpans[idx] = -1;
+		}
+	
+
+		answer.push_back(tmpans);
+		tmpans.clear();
+	}
+	for (int i = 0; i < answer.size(); i++) {
+		for (int j = 0; j < answer[i].size(); j++) {
+			cout << answer[i][j] << " ";
+		}
+		cout << endl;
+	}
+	return 0;
+}
