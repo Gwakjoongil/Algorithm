@@ -4,7 +4,7 @@
 //2. 문자열 내 대문자와 숫자가 제공된다.
 //3. 대문자 2자, 숫자 3자로 이루어진 문자열이어야 한다.
 //4. 대문자 2자가 모두 나오기 전에 숫자가 나오면 안된다.
-
+ 
 #include <string>
 #include <algorithm>
 #include <iostream>
