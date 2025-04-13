@@ -1,0 +1,44 @@
+//2025 LIG넥스원 상반기 코딩테스트 1번 문제
+//문자열 벡터가 주어졌을 때 다음 조건을 만족하는 문자열의 개수를 반환하라.
+//1. 문자열은 5자 고정이다.
+//2. 문자열 내 대문자와 숫자가 제공된다.
+//3. 대문자 2자, 숫자 3자로 이루어진 문자열이어야 한다.
+//4. 대문자 2자가 모두 나오기 전에 숫자가 나오면 안된다.
+
+#include <string>
+#include <algorithm>
+#include <iostream>
+#include <vector>
+using namespace std;
+int main() {
+	
+	vector<string> st = { "GC123", "G23C1", "VFD32", "321ER" };
+	int engCount, numCount;
+	int answer = 0;
+
+	for (int i = 0; i < st.size(); i++) {
+		engCount = 0;
+		numCount = 0;
+		for (int j = 0; j < st[i].length(); j++) {
+			if (st[i][j] >= 65 && st[i][j] <= 90) {
+				engCount++;
+			}
+			else if (st[i][j] - '0' >= 0  && st[i][j] - '0' <= 9 ) {
+				numCount++;
+			}
+			else {
+				break;
+			}
+
+			if (engCount != 2 && numCount > 0) {
+				break;
+			}
+		}
+		if (engCount == 2 && numCount == 3) {
+			answer++;
+		}
+	}
+
+	cout << answer;
+	return 0;
+}
