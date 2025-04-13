@@ -1,0 +1,96 @@
+from GPT
+//도로 이동 문제
+//2차원 벡터가 주어지며 각 벡터 안에는 0,1,2,3,4 숫자 중 한 숫자가 적혀있다.
+//0은 이어진 다리가 없는 도로
+//(1 - 상, 2 - 우, 3 - 하, 4 - 좌)로 이어진 도로이다.
+// 만약 내 위치가 0일 때 상하좌우 위치 중 내 위치와 연결된 다리가 있다면 그 도로로 이동이 가능하다.
+//출발은 (0,0) / 도착은 (벡터.size() - 1, 벡터[0].size()-1)
+//각 다리를 이동할 때는 1만큼 시간이 걸린다.
+//각 다리는 1-2-3-4-1 순으로 회전이 가능하다. 
+//회전에도 1만큼 시간이 걸린다.
+//만약 현재 다리가 바라보는 방향이 아니더라도 그 다리에서 현재 다리를 바라본다면 이동이 가능하다(무방향)
+//출발 지점에서 도착 지점까지 걸리는 최소 시간을 구해라.
+//만약 도착이 불가능하면 -1을 반환하라.
+
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <tuple>
+using namespace std;
+
+// 상 우 하 좌
+int dx[4] = {-1, 0, 1, 0};
+int dy[4] = {0, 1, 0, -1};
+int dirFromRoad[5] = {-1, 0, 1, 2, 3};      // 도로 번호 1~4 → 방향 인덱스
+int reverseDir[4] = {2, 3, 0, 1};           // 상대방이 바라봐야 하는 방향
+
+int minTravelTime(vector<vector<int>>& road) {
+    int n = road.size();
+    int m = road[0].size();
+
+    // visited[x][y][dir] = 최소 비용 (dir: 0~3 방향, 4는 도로 없음 상태)
+    vector<vector<vector<int>>> visited(n, vector<vector<int>>(m, vector<int>(5, 1e9)));
+    queue<tuple<int, int, int, int>> q; // (x, y, dir, cost)
+
+    if (road[0][0] == 0) {
+        // 출발 위치가 0인 경우 → 주변 도로 중 나를 바라보는 애 찾기
+        for (int d = 0; d < 4; d++) {
+            int nx = 0 + dx[d];
+            int ny = 0 + dy[d];
+            if (nx < 0 || ny < 0 || nx >= n || ny >= m) continue;
+            int neighbor = road[nx][ny];
+            if (neighbor == 0) continue;
+
+            int ndir = dirFromRoad[neighbor];
+            if (ndir == reverseDir[d]) {
+                // 연결되어 있음
+                visited[0][0][4] = 0; // 출발지 자체는 방향 없음
+                visited[nx][ny][ndir] = 1;
+                q.push({nx, ny, ndir, 1});
+            }
+        }
+    } else {
+        // 출발 위치에 도로 있음 → 회전 가능한 모든 방향 넣기
+        int baseDir = dirFromRoad[road[0][0]];
+        for (int rot = 0; rot < 4; rot++) {
+            int newDir = (baseDir + rot) % 4;
+            if (visited[0][0][newDir] > rot) {
+                visited[0][0][newDir] = rot;
+                q.push({0, 0, newDir, rot});
+            }
+        }
+    }
+
+    while (!q.empty()) {
+        auto [x, y, dir, cost] = q.front(); q.pop();
+
+        if (x == n - 1 && y == m - 1) return cost;
+
+        // 현재 위치에서 이동
+        int nx = x + dx[dir];
+        int ny = y + dy[dir];
+        if (nx >= 0 && ny >= 0 && nx < n && ny < m) {
+            int next = road[nx][ny];
+            if (next != 0) {
+                int ndir = dirFromRoad[next];
+                if (ndir == reverseDir[dir]) {
+                    if (visited[nx][ny][ndir] > cost + 1) {
+                        visited[nx][ny][ndir] = cost + 1;
+                        q.push({nx, ny, ndir, cost + 1});
+                    }
+                }
+            }
+        }
+
+        // 회전 (자기 자리에서 방향 바꾸기)
+        for (int rot = 1; rot <= 3; rot++) {
+            int newDir = (dir + rot) % 4;
+            if (visited[x][y][newDir] > cost + rot) {
+                visited[x][y][newDir] = cost + rot;
+                q.push({x, y, newDir, cost + rot});
+            }
+        }
+    }
+
+    return -1;
+}
