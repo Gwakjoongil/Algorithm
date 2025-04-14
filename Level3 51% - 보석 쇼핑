@@ -1,0 +1,65 @@
+#include <string>
+#include <vector>
+#include <set>
+#include <map>
+#include <algorithm>
+#include <iostream>
+using namespace std;
+
+vector<int> solution(vector<string> gems) {
+    vector<int> answer;
+    set<string> tmpgems;
+    int lidx=0, ridx=0;
+    int totGems=1;
+    map<string, int> m;
+    //우선 gems 종류 수 구하기
+    for(int i=0;i<gems.size();i++){
+        tmpgems.insert(gems[i]);
+    }
+    m[gems[0]]++;
+    //이 벡터는 totGems가 tmpGems.size()와 같아지면 저장하는 벡터
+    vector<pair<int, pair<int, int>>> saveIdx;
+    
+    //끝까지 돌긴 해야함
+    while(ridx < gems.size()){
+        
+        //보석 종류가 같아지면
+        if(totGems == tmpgems.size()){
+            //현재 인덱스를 저장한다.
+            saveIdx.push_back(make_pair(ridx-lidx, make_pair(lidx, ridx)));
+            //만약 lidx를 증가시켰을 때 기존 lidx의 값이 lidx+1 ~ ridx에 없다면 totGems를 감소한다.
+            m[gems[lidx]]--;
+            if(m[gems[lidx]] == 0){
+                totGems--;   
+            }
+            //그리고 lidx를 증가한다.
+            if(lidx+1 <= ridx){
+                lidx++;              
+            }
+        }
+        
+        if(totGems < tmpgems.size()){   
+            if(ridx+1 < gems.size()){
+                if(m[gems[ridx+1]] ==0)
+                totGems++;
+                m[gems[ridx+1]]++;
+            }
+            ridx++;
+            
+        }
+    }
+    int tmpl=saveIdx[0].second.first;
+    int tmpr=saveIdx[0].second.second;
+    int tmpval=saveIdx[0].first;
+    for(int i=1;i<saveIdx.size();i++){
+        if(tmpval > saveIdx[i].first){
+            tmpl=saveIdx[i].second.first;
+            tmpr=saveIdx[i].second.second;
+            tmpval=saveIdx[i].first;
+        }
+    }
+    answer.push_back(tmpl+1);
+    answer.push_back(tmpr+1);
+    return answer;
+}
+    
