@@ -1,0 +1,30 @@
+#include <iostream>
+#include <vector>
+#include <cmath>
+using namespace std;
+
+int solution(int n, vector<int> stations, int w) {
+    int answer = 0;
+    int range = 2 * w + 1;  // 한 기지국이 커버할 수 있는 총 길이
+    int lastCovered = 0;  // 마지막으로 전파가 도달한 아파트 번호
+
+    // 기존 기지국을 순회하며 커버되지 않는 영역을 찾음
+    for (int station : stations) {
+        int left = station - w;   // 기지국의 왼쪽 범위
+        int right = station + w;  // 기지국의 오른쪽 범위
+
+        if (lastCovered + 1 < left) {  // 이전 기지국이 도달하지 못하는 구간이 존재하면
+            int gap = left - lastCovered - 1;
+            answer += ceil((double)gap / range);
+        }
+        lastCovered = right;
+    }
+
+    // 마지막 기지국 이후에 남은 구간 처리
+    if (lastCovered < n) {
+        int gap = n - lastCovered;
+        answer += ceil((double)gap / range);
+    }
+
+    return answer;
+}
