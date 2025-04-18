@@ -1,0 +1,81 @@
+//넥스원 2번 문제
+/* int n, cnt;
+	vector<int> times;
+	int tmp;
+	cin >> n>>cnt;
+	for (int i = 0; i < cnt; i++) {
+		cin >> tmp;
+		times.push_back(tmp);
+	}
+	priority_queue<pair<int, int>, vector<pair<int, int>>, greater<>> pq;
+
+	for (int i = 0; i < n; i++) {
+		pq.emplace(0, i);
+	}
+	int ct, cn;
+	int tot_time = 0;
+	for (int i = 0; i < times.size(); i++) {
+		ct = pq.top().first;
+		cn = pq.top().second;
+		pq.pop();
+
+		int ride_time = times[i] + (n - times[i] % n) % n;
+		ct += ride_time;
+
+		pq.emplace(ct, cn);
+		tot_time = max(ct, tot_time);
+
+	}
+
+	cout << tot_time;*/
+
+	//넥스원 1번 문제
+	//int answer = 0;
+		//int num1, num2;
+		//cin >> num1 >> num2;
+		//
+		//int c;
+		//string tmpa, tmpb, tmpc;
+		//
+		//int tmpcnt = 0;
+		////1. 1~num1, 1~num2 까지 각각 검사한다.
+		//for (int i = 1; i <= num1; i++) {
+		//    for (int j = 1; j <= num2; j++) {
+		//        set<char> s;
+		//        //1-1. 검사 과정에서 c에 a*b를 대입한다.
+		//        c = i * j;
+		//        //1-2. c를 문자열로 변환한다. 
+		//        tmpc = to_string(c);
+		//        
+
+		//        //1-3. a,b를 문자열로 변환한다. 
+		//        tmpa = to_string(i);
+		//        tmpb = to_string(j);
+
+		//        // -> 변환한 문자열을 하나씩 set에 담아 합집합 만들기
+		//        for (int k = 0; k < tmpa.length(); k++) {
+		//            s.insert(tmpa[k]);
+		//        }
+		//        for (int k = 0; k < tmpb.length(); k++) {
+		//            s.insert(tmpb[k]);
+		//        }
+		//        bool flag = true;
+		//        //1-4. find를 이용해 set에 c가 있는지 확인한다.
+		//        for (int k = 0; k < tmpc.length(); k++) {
+		//            if (find(s.begin(), s.end(), tmpc[k]) == s.end()) {
+		//                flag = false;
+		//                break;
+		//            }
+		//        }
+
+		//        if (flag == true) answer++;
+
+		//        //1-6. set clear
+		//        s.clear();
+		//    }
+		//}
+
+
+
+		//cout << answer;
+		//
