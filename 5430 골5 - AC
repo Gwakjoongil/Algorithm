@@ -1,0 +1,107 @@
+#include <string>
+#include <algorithm>
+#include <iostream>
+#include <vector>
+#include <queue>;
+#include <deque>
+using namespace std;
+
+//R - 배열 뒤집기
+//D - 첫 번째 수 버리기(비었는데 사용하면 Error)
+
+//이 문제는 시간 초과 발생 안하는 게 관건
+//벡터대신 덱을 이용해야 함(벡터는 erase(O(n))때문에 안됨)
+//덱을 사용한다 하더라도 reverse를 남발하면 시간초과 발생함 -> flag 이용해 풀면 됨
+int main() {
+	int tot;
+	
+	deque<int> dq;
+	vector<string> calc;
+	vector<int> vecsize;
+	vector<string> tmpvec;
+
+	string tmpcalc, tmptmpvec;
+	int tmpvecsize;
+	
+	cin >> tot;
+
+	for (int i = 0; i < tot; i++) {
+
+		cin >> tmpcalc >> tmpvecsize >> tmptmpvec;
+
+		calc.push_back(tmpcalc);
+		vecsize.push_back(tmpvecsize);
+		tmpvec.push_back(tmptmpvec);
+	}
+
+	int errflag;
+	for (int i = 0; i < tot; i++) {
+		int reverseflag = 1;
+		dq.clear();
+		errflag = 0;
+		string tmpint;
+		//1. 문자열 -> 벡터 만들기
+		for (int j = 0; j < tmpvec[i].length(); j++) {
+			if (tmpvec[i][j] != '[' || tmpvec[i][j] != ']') {
+				if (tmpvec[i][j] - '0' >= 0 && tmpvec[i][j] - '0' <= 9) {
+					tmpint += tmpvec[i][j];
+				}
+				else if (tmpvec[i][j] == ',') {
+					dq.push_back(stoi(tmpint));
+					tmpint.clear();
+				}
+			}
+		}
+
+		if (tmpint.length() > 0) {
+			dq.push_back(stoi(tmpint));
+			tmpint.clear();
+		}
+
+
+		for (int j = 0; j < calc[i].length(); j++) {
+
+			if (calc[i][j] == 'R') {
+				reverseflag *= -1;
+			}
+			else if (calc[i][j] == 'D') {
+				if (dq.size() != 0) {
+					if(reverseflag == 1)
+						dq.pop_front();
+					else {
+						dq.pop_back();
+					}
+				}
+				else {
+					cout << "error" << "\n";
+					errflag = 1;
+					break;
+				}
+			}
+		}
+
+		if (errflag == 0) {
+
+			if (reverseflag == -1) reverse(dq.begin(), dq.end());
+
+			string ret;
+			ret += '[';
+			int size = dq.size();
+			for (int i = 0; i < size; i++) {
+				ret+= to_string(dq.front()) + ",";
+				dq.pop_front();
+			}
+
+			if(ret[ret.length()-1] == ',')
+				ret.erase(ret.begin() + ret.length() - 1);
+			ret += ']';
+			cout << ret << "\n";
+		}
+
+
+	}
+
+
+
+	return 0;
+}
