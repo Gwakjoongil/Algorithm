@@ -1,0 +1,426 @@
+//이 문제는 문제에 제시된 글을 매우 잘 읽어야 함..ㅋㅋㅋ
+//x->y로 이동할 때 y->z로 값을 이동시키는 것.
+//그러나 기준은 x로 잡고 흩날리기 등
+//제대로 읽지 않아 이동시 기준을 이상하게 잡아서 고생함..ㅋㅋㅋㅋ
+//나머지는 노가다
+
+#include <string>
+#include <algorithm>
+#include <iostream>
+#include <vector>
+#include <queue>;
+using namespace std;
+
+//2. 각 탐색마다 % 구하기
+//3. 범위 밖 애들 확인
+
+int main() {
+
+	int n;
+	vector<vector<int>> map;
+	int tmp;
+	vector<int> tmpm;
+
+	cin >> n;
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n; j++) {
+			cin >> tmp;
+			tmpm.push_back(tmp);
+		}
+		map.push_back(tmpm);
+		tmpm.clear();
+	}
+
+	//1. 토네이도 방향 탐색 구현
+	int cx = n / 2, cy = n / 2;
+	int cnt = 0;
+	vector<vector<int>> visited(n, vector<int>(n, 0));
+	int nx[4] = { 0,1,0,-1 };
+	int ny[4] = { -1,0,1,0 };
+
+	visited[cx][cy] = 1;
+
+	int idx = 0;
+
+ 	int ans = 0;
+	int tmpa;
+	while (true) {
+
+		if (cx == 0 && cy == 0) break;
+		tmpa = 0;
+		switch (idx)
+		{
+		case 0: // left
+			//map 범위 내에 있으면
+			if (cy + ny[idx] >= 0 && cy + ny[idx] < n) {
+				//그 곳이 방문하지 않은 곳이라면
+				if (visited[cx][cy + ny[idx]] == 0) {
+					
+					//여기서부터 폭풍 분사
+					if (map[cx][cy + ny[idx]] > 0) {
+						//1%
+						if (cx - 1 >= 0) {
+							map[cx - 1][cy] += map[cx][cy + ny[idx]] * 0.01;
+							
+						}
+						else ans += map[cx][cy + ny[idx]] * 0.01;
+						tmpa += map[cx][cy + ny[idx]] * 0.01;
+						//1%
+						if (cx + 1 < n) {
+							map[cx + 1][cy] += map[cx][cy + ny[idx]] * 0.01;
+						}
+						else ans += map[cx][cy + ny[idx]] * 0.01;
+						tmpa += map[cx][cy + ny[idx]] * 0.01;
+
+						//7%
+						if (cx - 1 >= 0 && cy - 1 >= 0) {
+							map[cx - 1][cy - 1] += map[cx][cy + ny[idx]] * 0.07;
+						}
+						else ans += map[cx][cy + ny[idx]] * 0.07;
+						tmpa += map[cx][cy + ny[idx]] * 0.07;
+
+						//7%
+						if (cx + 1 < n && cy - 1 >= 0) {
+							map[cx + 1][cy - 1] += map[cx][cy + ny[idx]] * 0.07;
+						}
+						else ans += map[cx][cy + ny[idx]] * 0.07;
+						tmpa += map[cx][cy + ny[idx]] * 0.07;
+
+						//2%
+						if (cx - 2 >= 0 && cy - 1 >= 0) {
+							map[cx - 2][cy - 1] += map[cx][cy + ny[idx]] * 0.02;
+						}
+						else ans += map[cx][cy + ny[idx]] * 0.02;
+						tmpa += map[cx][cy + ny[idx]] * 0.02;
+
+						//2%
+						if (cx + 2 < n && cy - 1 >= 0) {
+							map[cx + 2][cy - 1] += map[cx][cy + ny[idx]] * 0.02;
+						}
+						else ans += map[cx][cy + ny[idx]] * 0.02;
+						tmpa += map[cx][cy + ny[idx]] * 0.02;
+
+						//10%
+						if (cx - 1 >= 0 && cy - 2 >= 0) {
+							map[cx - 1][cy - 2] += map[cx][cy + ny[idx]] * 0.1;
+						}
+						else ans += map[cx][cy + ny[idx]] * 0.1;
+						tmpa += map[cx][cy + ny[idx]] * 0.1;
+
+						//10%
+						if (cx + 1 < n && cy - 2 >= 0) {
+							map[cx + 1][cy - 2] += map[cx][cy + ny[idx]] * 0.1;
+						}
+						else ans += map[cx][cy + ny[idx]] * 0.1;
+						tmpa += map[cx][cy + ny[idx]] * 0.1;
+
+						//5%
+						if (cy - 3 >= 0) {
+							map[cx][cy - 3] += map[cx][cy + ny[idx]] * 0.05;
+						}
+						else ans += map[cx][cy + ny[idx]] * 0.05;
+						tmpa += map[cx][cy + ny[idx]] * 0.05;
+
+						if(cy + ny[idx] * 2 >= 0)
+							map[cx][cy + ny[idx]*2] += map[cx][cy + ny[idx]] - tmpa;
+						else {
+							ans += map[cx][cy + ny[idx]] - tmpa;
+						}
+						map[cx][cy + ny[idx]] = 0;
+					}
+					//방문 처리하고 방향 바꾸기
+					visited[cx][cy + ny[idx]] = 1;
+					cx += nx[idx];
+					cy += ny[idx];
+					idx = 1;
+				}
+				else {
+					idx = 3; // 왼쪽으로 시도한다는 건 위로 가는 중이었음
+				}
+			}
+			break;
+		case 1://bottom
+			//map 범위 내에 있으면
+			if (cx + nx[idx] >= 0 &&  cx + nx[idx] < n) {
+				//그 곳이 방문하지 않은 곳이라면
+				if (visited[cx + nx[idx]][cy] == 0) {
+
+					//여기서부터 폭풍 분사
+					if (map[cx + nx[idx]][cy] > 0) {
+						//1%
+						if (cy - 1 >= 0) {
+							map[cx][cy - 1] += map[cx + nx[idx]][cy] * 0.01;
+						}
+						else ans += map[cx + nx[idx]][cy] * 0.01;
+						tmpa += map[cx + nx[idx]][cy] * 0.01;
+
+						//1%
+						if (cy + 1 < n) {
+							map[cx][cy + 1] += map[cx + nx[idx]][cy] * 0.01;
+						}
+						else ans += map[cx + nx[idx]][cy] * 0.01;
+						tmpa += map[cx + nx[idx]][cy] * 0.01;
+
+						//7%
+						if (cx + 1 < n && cy - 1 >= 0) {
+							map[cx + 1][cy - 1] += map[cx + nx[idx]][cy] * 0.07;
+						}
+						else ans += map[cx + nx[idx]][cy] * 0.07;
+						tmpa += map[cx + nx[idx]][cy] * 0.07;
+
+						//7%
+						if (cx + 1 < n && cy + 1 < n) {
+							map[cx + 1][cy + 1] += map[cx + nx[idx]][cy] * 0.07;
+						}
+						else ans += map[cx + nx[idx]][cy] * 0.07;
+						tmpa += map[cx + nx[idx]][cy] * 0.07;
+
+						//2%
+						if (cx + 1 < n && cy - 2 >= 0) {
+							map[cx + 1][cy - 2] += map[cx + nx[idx]][cy] * 0.02;
+						}
+						else ans += map[cx + nx[idx]][cy] * 0.02;
+						tmpa += map[cx + nx[idx]][cy] * 0.02;
+
+						//2%
+						if (cx + 1 < n && cy + 2 < n) {
+							map[cx + 1][cy + 2] += map[cx + nx[idx]][cy] * 0.02;
+						}
+						else ans += map[cx + nx[idx]][cy] * 0.02;
+						tmpa += map[cx + nx[idx]][cy] * 0.02;
+
+						//10%
+						if (cx + 2 < n && cy - 1 >= 0) {
+							map[cx + 2][cy - 1] += map[cx + nx[idx]][cy] * 0.1;
+						}
+						else ans += map[cx + nx[idx]][cy] * 0.1;
+						tmpa += map[cx + nx[idx]][cy] * 0.1;
+
+						//10%
+						if (cx + 2 < n && cy + 1 >= 0) {
+							map[cx + 2][cy + 1] += map[cx + nx[idx]][cy] * 0.1;
+						}
+						else ans += map[cx + nx[idx]][cy] * 0.1;
+						tmpa += map[cx + nx[idx]][cy] * 0.1;
+
+						//5%
+						if (cx + 3 < n) {
+							map[cx + 3][cy] += map[cx + nx[idx]][cy] * 0.05;
+						}
+						else ans += map[cx + nx[idx]][cy] * 0.05;
+						tmpa += map[cx + nx[idx]][cy] * 0.05;
+
+						if(cx + nx[idx]*2 < n)
+							map[cx + nx[idx]*2][cy] += map[cx + nx[idx]][cy] - tmpa;
+						else
+							ans+= map[cx + nx[idx]][cy] - tmpa;
+						map[cx + nx[idx]][cy] = 0;
+					}
+					//방문 처리하고 방향 바꾸기
+					visited[cx + nx[idx]][cy] = 1;
+					cx += nx[idx];
+					cy += ny[idx];
+					idx = 2;
+				}
+				else {
+					idx = 0; // 아래쪽으로 시도한다는 건 왼쪽으로 가는 중이었음
+				}
+			}
+			break;
+		case 2://right
+			//map 범위 내에 있으면
+			if (cy + ny[idx] >= 0 && cy + ny[idx] < n) {
+				//그 곳이 방문하지 않은 곳이라면
+				if (visited[cx][cy + ny[idx]] == 0) {
+
+					//여기서부터 폭풍 분사
+					if (map[cx][cy + ny[idx]] > 0) {
+						//1%
+						if (cx - 1 >= 0) {
+							map[cx - 1][cy] += map[cx][cy + ny[idx]] * 0.01;
+						}
+						else ans += map[cx][cy + ny[idx]] * 0.01;
+						tmpa += map[cx][cy + ny[idx]] * 0.01;
+
+						//1%
+						if (cx + 1 < n) {
+							map[cx + 1][cy] += map[cx][cy + ny[idx]] * 0.01;
+						}
+						else ans += map[cx][cy + ny[idx]] * 0.01;
+						tmpa += map[cx][cy + ny[idx]] * 0.01;
+
+						//7%
+						if (cx - 1 >= 0 && cy + 1 < n) {
+							map[cx - 1][cy + 1] += map[cx][cy + ny[idx]] * 0.07;
+						}
+						else ans += map[cx][cy + ny[idx]] * 0.07;
+						tmpa += map[cx][cy + ny[idx]] * 0.07;
+
+						//7%
+						if (cx + 1 < n && cy + 1 < n) {
+							map[cx + 1][cy + 1] += map[cx][cy + ny[idx]] * 0.07;
+						}
+						else ans += map[cx][cy + ny[idx]] * 0.07;
+						tmpa += map[cx][cy + ny[idx]] * 0.07;
+
+						//2%
+						if (cx - 2 >= 0 && cy + 1 < n) {
+							map[cx - 2][cy + 1] += map[cx][cy + ny[idx]] * 0.02;
+						}
+						else ans += map[cx][cy + ny[idx]] * 0.02;
+						tmpa += map[cx][cy + ny[idx]] * 0.02;
+
+						//2%
+						if (cx + 2 < n && cy + 1 < n) {
+							map[cx + 2][cy + 1] += map[cx][cy + ny[idx]] * 0.02;
+						}
+						else ans += map[cx][cy + ny[idx]] * 0.02;
+						tmpa += map[cx][cy + ny[idx]] * 0.02;
+
+						//10%
+						if (cx - 1 >= 0 && cy + 2 < n) {
+							map[cx - 1][cy + 2] += map[cx][cy + ny[idx]] * 0.1;
+						}
+						else ans += map[cx][cy + ny[idx]] * 0.1;
+						tmpa += map[cx][cy + ny[idx]] * 0.1;
+
+						//10%
+						if (cx + 1 < n && cy + 2 < n) {
+							map[cx + 1][cy + 2] += map[cx][cy + ny[idx]] * 0.1;
+						}
+						else ans += map[cx][cy + ny[idx]] * 0.1;
+						tmpa += map[cx][cy + ny[idx]] * 0.1;
+
+						//5%
+						if (cy + 3 < n) {
+							map[cx][cy + 3] += map[cx][cy + ny[idx]] * 0.05;
+						}
+						else ans += map[cx][cy + ny[idx]] * 0.05;
+						tmpa += map[cx][cy + ny[idx]] * 0.05;
+
+						if(cy + ny[idx]*2 < n)
+							map[cx][cy + ny[idx]*2] += map[cx][cy + ny[idx]] - tmpa;
+						else {
+							ans += map[cx][cy + ny[idx]] - tmpa;
+						}
+						map[cx][cy] = 0;
+					}
+					//방문 처리하고 방향 바꾸기
+					visited[cx][cy + ny[idx]] = 1;
+					cx += nx[idx];
+					cy += ny[idx];
+					idx = 3;
+				}
+				else {
+					idx = 1; // 오른쪽으로 시도한다는 건 아래로 가는 중이었음
+				}
+			}
+			break;
+		case 3://top
+			//map 범위 내에 있으면
+			if (cx + nx[idx] >= 0&& cx + nx[idx] < n) {
+				//그 곳이 방문하지 않은 곳이라면
+				if (visited[cx + nx[idx]][cy ] == 0) {
+
+					//여기서부터 폭풍 분사
+					if (map[cx + nx[idx]][cy] > 0) {
+						//1%
+						if (cy - 1 >= 0) {
+							map[cx][cy - 1] += map[cx + nx[idx]][cy] * 0.01;
+						}
+						else ans += map[cx + nx[idx]][cy] * 0.01;
+						tmpa += map[cx + nx[idx]][cy] * 0.01;
+
+						//1%
+						if (cy + 1 < n) {
+							map[cx][cy + 1] += map[cx + nx[idx]][cy] * 0.01;
+						}
+						else ans += map[cx + nx[idx]][cy] * 0.01;
+						tmpa += map[cx + nx[idx]][cy] * 0.01;
+
+						//7%
+						if (cx - 1 >= 0 && cy - 1 >= 0) {
+							map[cx - 1][cy - 1] += map[cx + nx[idx]][cy] * 0.07;
+						}
+						else ans += map[cx + nx[idx]][cy] * 0.07;
+						tmpa += map[cx + nx[idx]][cy] * 0.07;
+
+						//7%
+						if (cx - 1 >= 0 && cy + 1 < n) {
+							map[cx - 1][cy + 1] += map[cx + nx[idx]][cy] * 0.07;
+						}
+						else ans += map[cx + nx[idx]][cy] * 0.07;
+						tmpa += map[cx + nx[idx]][cy] * 0.07;
+
+						//2%
+						if (cx - 1 >= 0 && cy - 2 >= 0) {
+							map[cx - 1][cy - 2] += map[cx + nx[idx]][cy] * 0.02;
+						}
+						else ans += map[cx + nx[idx]][cy] * 0.02;
+						tmpa += map[cx + nx[idx]][cy] * 0.02;
+
+						//2%
+						if (cx - 1 >= 0 && cy + 2 < n) {
+							map[cx - 1][cy + 2] += map[cx + nx[idx]][cy] * 0.02;
+						}
+						else ans += map[cx + nx[idx]][cy] * 0.02;
+						tmpa += map[cx + nx[idx]][cy] * 0.02;
+
+						//10%
+						if (cx - 2 >= 0 && cy - 1 >= 0) {
+							map[cx - 2][cy - 1] += map[cx + nx[idx]][cy] * 0.1;
+						}
+						else ans += map[cx + nx[idx]][cy] * 0.1;
+						tmpa += map[cx + nx[idx]][cy] * 0.1;
+
+						//10%
+						if (cx - 2 >= 0 && cy + 1 < n) {
+							map[cx - 2][cy + 1] += map[cx + nx[idx]][cy] * 0.1;
+						}
+						else ans += map[cx + nx[idx]][cy] * 0.1;
+						tmpa += map[cx + nx[idx]][cy] * 0.1;
+
+						//5%
+						if (cx - 3 >= 0) {
+							map[cx - 3][cy] += map[cx + nx[idx]][cy] * 0.05;
+						}
+						else ans += map[cx + nx[idx]][cy] * 0.05;
+						tmpa += map[cx + nx[idx]][cy] * 0.05;
+
+						if(cx + nx[idx]*2 >= 0)
+							map[cx + nx[idx]*2][cy] += map[cx+nx[idx]][cy] - tmpa;
+						else
+							ans += map[cx + nx[idx]][cy] - tmpa;
+						map[cx][cy] = 0;
+					}
+					//방문 처리하고 방향 바꾸기
+					visited[cx + nx[idx]][cy] = 1;
+					cx += nx[idx];
+					cy += ny[idx];
+					idx = 0;
+				}
+				else {
+					idx = 2; // 위쪽으로 시도한다는 건 오른쪽으로 가는 중이었음
+				}
+			}
+			break;
+		default:
+			break;
+		}
+
+
+
+	}
+	/*cout << endl << endl;
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n; j++) {
+			cout << map[i][j] << " ";
+		}
+		cout << endl;
+	}
+	cout << endl;*/
+	cout << ans;
+	return 0;
+}
+
+
