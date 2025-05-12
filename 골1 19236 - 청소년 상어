@@ -1,0 +1,134 @@
+//개복잡한 구현 문제
+//3시간 걸림ㅋㅋㅋㅋㅋ
+//최댓값을 BFS or DFS로 구하는 게 핵심
+//큐에 뭐 넣고 할지도 중요함
+#include <string>
+#include <algorithm>
+#include <iostream>
+#include <vector>
+#include <queue>;
+#include <cstdlib>
+using namespace std;
+
+int main() {
+	//- 각 물고기는 번호와 방향 갖고 있다(1~16)
+	//물고기 - 여기부터 시작
+	//3. 물고기는 번호가 작은 물고기부터 순서대로 이동.
+	//4. 물고기는 한 칸 이동 가능
+	//- 이동 가능 칸 : 빈 칸 ,다른 물고기가 있는 칸
+	//- 이동 불가능 칸 : 상어있는 칸, 공간 경계 넘는 칸
+	//각 물고기는 방향이 이동할 수 있는 칸 향할 때까지 45도 반시계 회전
+	//만약 이동 불가능 칸이면 이동X
+	//그 외의 경우 그 칸으로 이동
+	//이동 시에는 서로의 위치를 바꾸기
+
+	vector<int> rdir = { -1, -1, 0, 1, 1, 1, 0, -1 };
+	vector<int> cdir = { 0, -1, -1, -1, 0, 1, 1, 1 };
+
+	vector<vector<int>> fishNumber(4, vector<int>(4, 0));
+	vector<vector<int>> fishDir(4, vector<int>(4,0));
+
+	int fnum, fdir;
+
+	//물고기 세팅
+	for (int i = 0; i < 4; i++) {
+		for (int j = 0; j < 4; j++) {
+			cin >> fnum >> fdir;
+			fishNumber[i][j] = fnum;
+			fishDir[i][j] = fdir-1;
+		}
+	}
+
+	//상어 세팅
+	int eatCount = fishNumber[0][0];
+	int sharkRow = 0;
+	int sharkCol = 0;
+	int sharkDir = fishDir[0][0];
+	fishNumber[0][0] = -1;
+	fishDir[0][0] = 0;
+	queue < pair<pair<int, int>, pair<int, pair<int, pair<vector<vector<int>>,vector<vector<int>>>>>>>shark;
+	//row, col, dir, cnt, fishnumber;
+
+	shark.push(make_pair(make_pair(sharkRow, sharkCol), make_pair(sharkDir, make_pair(eatCount, make_pair(fishDir,fishNumber)))));
+
+	int max_eatCount = 0;
+	int turnCount = 0;
+	int fishnum, fishcol;
+	//상어가 이동 불가할 때까지 반복
+	while (!shark.empty()) {
+		sharkRow = shark.front().first.first;
+		sharkCol = shark.front().first.second;
+		sharkDir = shark.front().second.first;
+		eatCount = shark.front().second.second.first;
+		fishDir = shark.front().second.second.second.first;
+		fishNumber = shark.front().second.second.second.second;
+		shark.pop();
+		fishNumber[sharkRow][sharkCol] = -1;
+		fishDir[sharkRow][sharkCol] = 0;
+		if (max_eatCount < eatCount) {
+			max_eatCount = eatCount;
+		}
+
+		fishnum = 1;
+
+		turnCount = 0;
+		//물고기 이동
+		while (fishnum <= 16) {
+			turnCount = 0;
+			for (int i = 0; i < 4; i++) {
+				if (find(fishNumber[i].begin(), fishNumber[i].end(), fishnum) != fishNumber[i].end()) {
+					fishcol = find(fishNumber[i].begin(), fishNumber[i].end(), fishnum) - fishNumber[i].begin();
+					//공백, 상어가 아닌 물고기라면
+					if (fishNumber[i][fishcol] != -1 && fishNumber[i][fishcol] != 0) {
+						//이동 가능 범위이고 그곳에 상어가 없다면
+						if (i + rdir[fishDir[i][fishcol]] >= 0 && i + rdir[fishDir[i][fishcol]] < 4
+							&& fishcol + cdir[fishDir[i][fishcol]] >= 0 && fishcol + cdir[fishDir[i][fishcol]] < 4
+							&& fishNumber[i + rdir[fishDir[i][fishcol]]][fishcol + cdir[fishDir[i][fishcol]]] != -1) {
+							//물고기 번호와 방향 Swap하기
+							swap(fishNumber[i + rdir[fishDir[i][fishcol]]][fishcol + cdir[fishDir[i][fishcol]]], fishNumber[i][fishcol]);
+							swap(fishDir[i + rdir[fishDir[i][fishcol]]][fishcol + cdir[fishDir[i][fishcol]]], fishDir[i][fishcol]);
+						}
+						//이동 불가하다면 반시계 회전 후 다시 돌기
+						else {
+							if (turnCount < 8) {
+								fishDir[i][fishcol]++;
+								if (fishDir[i][fishcol] == 8) fishDir[i][fishcol] = 0;
+								i--;
+								turnCount++;
+								continue;
+							}
+							else break;
+						}
+					}
+					break;
+				}
+			}
+			fishnum++;
+		}
+		//상어 이동
+		//- 0,0 에서 시작(방향도 0,0에 있는 것 사용)
+		
+		//- 물고기가 있는 칸이라면, 그 칸의 물고기 먹고, 물고기 방향을 가진다.
+		//- 이동 중 지나가는 칸에 있는 물고기는 먹지 않는다.
+		//- 물고기 없는 칸으로는 이동 불가
+		//- 상어가 이동할 수 있는 칸이 없다면 공간에서 벗어나 집으로 간다.
+
+		fishNumber[sharkRow][sharkCol] = 0;
+		//- 한번에 여러 개 칸 이동 가능.
+		while (true) {
+			if (sharkRow + rdir[sharkDir] >= 0 && sharkRow + rdir[sharkDir] < 4
+				&& sharkCol + cdir[sharkDir] >= 0 && sharkCol + cdir[sharkDir] < 4)
+			{//row, col, dir, cnt, fishnumber;
+				sharkRow += rdir[sharkDir];
+				sharkCol += cdir[sharkDir];
+				if (fishNumber[sharkRow][sharkCol] != 0) {
+					shark.push(make_pair(make_pair(sharkRow, sharkCol), make_pair(fishDir[sharkRow][sharkCol], make_pair(eatCount + fishNumber[sharkRow][sharkCol], make_pair(fishDir,fishNumber)))));
+				}
+			}
+			else { break; }
+		}
+
+	}
+	cout << max_eatCount;
+	return 0;
+}
