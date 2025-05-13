@@ -1,0 +1,197 @@
+//실수하면 찾기 힘든 문제....ㅠㅠ 디버깅 안하면 시간 엄청 걸릴듯.,..난 함ㅋ
+//그래도 집중해서 풀면 충분히 풀만한 문제! 난이도가 엄청 높진 않다.
+
+#include <string>
+#include <algorithm>
+#include <iostream>
+#include <vector>
+#include <queue>;
+#include <cstdlib>
+using namespace std;
+
+int main() {
+	int n, l;
+	cin >> n >> l;
+	vector<vector<int>> vec;
+	vector<int> tmpvec;
+	int tmp;
+
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n; j++) {
+			cin >> tmp;
+			tmpvec.push_back(tmp);
+		}
+		vec.push_back(tmpvec);
+		tmpvec.clear();
+	}
+
+	//경사로는 낮은 칸에 놓으며, L개의 연속된 칸에 경사로 바닥이 모두 접해야 한다.
+	
+
+	//|낮은 칸 - 높은 칸| = 1
+	//경사로 놓는 낮은 칸의 높이는 모두 같아야 함.(L개의 칸이 연속돼 있어야 한다.
+
+	//놓지 못하는 경우
+	//경사로를 놓은 곳에 또 경사로를 놓는 경우
+	//낮은 칸과 높은 칸의 높이 차가 1이 아닌 경우
+	//낮은 지점의 칸의 높이가 모두 같지 않거나, L개가 연속되지 않은 경우
+	//경사로를 놓다가 범위를 벗어나는 경우
+
+
+	int def;
+	int ans = 0;
+	int cntl = 0;
+	vector<vector<int>> visited(n, vector<int>(n, 0));
+	//총 2번
+	//상 -> 하
+	for (int i = 0; i < n; i++) { //가로
+		def = vec[0][i];
+		cntl = 0;
+		for (int j = 0; j < n-1; j++) { //세로
+			if (def != vec[j + 1][i]) {
+				if (abs(def - vec[j + 1][i]) == 1) {
+					//기준점이 비교점보다 작을 경우
+//기준점 기준으로 l칸 뒤로 경사로 놔보기
+					if (def < vec[j + 1][i]) {
+						for (int k = 0; k < l; k++) {
+							//범위 벗어나면 끝
+							if (j - k < 0) {
+								cntl = 1;
+								break;
+							}
+							//경사로 다 놓기 전에 수가 바뀌면 끝
+							else if (def != vec[j - k][i]) {
+								cntl = 1;
+								break;
+							}
+							else {
+								//이미 경사로가 있는 곳이면 끝
+								if (visited[j - k][i] == 1) {
+									cntl = 1;
+									break;
+								}
+								//다 아니면 경사로 놓기
+								else {
+									visited[j - k][i] = 1;
+								}
+							}
+						}
+						//경사로 다 놓고 기준점 바꾸기
+						def = vec[j + 1][i];
+					}
+					//비교점이 기준점보다 작을 경우
+					//비교점 기준으로 l칸 앞으로 경사로 놔보기
+					else {
+						for (int k = 0; k < l; k++) {
+							//범위 벗어나면 끝
+							if (j + 1 + k >= n) {
+								cntl = 1;
+								break;
+							}
+							//경사로 다 놓기 전에 값 바뀌면 끝
+							else if (vec[j + 1][i] != vec[j + 1 + k][i]) {
+								cntl = 1;
+								break;
+							}
+							else {
+								visited[j + 1+k][i] = 1;
+							}
+						}
+						//경사로 다 놓고 기준점 바꾸기
+						def = vec[j + 1][i];
+					}
+				}
+				else {
+					cntl = 1;
+					break;
+				}
+			}
+			if (cntl == 1) break;
+		}
+		if (cntl == 0) {
+			ans++;
+		}
+	}
+
+	
+	for (int i = 0; i < visited.size(); i++) {
+		for (int j = 0; j < visited.size(); j++) {
+			visited[i][j] = 0;
+		}
+	}
+
+	//좌우
+	for (int i = 0; i < n; i++) { //세로
+		def = vec[i][0];
+		cntl = 0;
+		for (int j = 0; j < n - 1; j++) { //가로
+			if (def != vec[i][j + 1]) {
+				if (abs(def - vec[i][j + 1]) == 1) {
+					//기준점이 비교점보다 작을 경우
+//기준점 기준으로 l칸 뒤로 경사로 놔보기
+					if (def < vec[i][j + 1]) {
+						for (int k = 0; k < l; k++) {
+							//범위 벗어나면 끝
+							if (j - k < 0) {
+								cntl = 1;
+								break;
+							}
+							//경사로 다 놓기 전에 수가 바뀌면 끝
+							else if (def != vec[i][j - k]) {
+								cntl = 1;
+								break;
+							}
+							else {
+								//이미 경사로가 있는 곳이면 끝
+								if (visited[i][j - k] == 1) {
+									cntl = 1;
+									break;
+								}
+								//다 아니면 경사로 놓기
+								else {
+									visited[i][j - k] = 1;
+								}
+							}
+						}
+						//경사로 다 놓고 기준점 바꾸기
+						def = vec[i][j + 1];
+					}
+					//비교점이 기준점보다 작을 경우
+					//비교점 기준으로 l칸 앞으로 경사로 놔보기
+					else {
+						for (int k = 0; k < l; k++) {
+							//범위 벗어나면 끝
+							if (j + 1 + k >= n) {
+								cntl = 1;
+								break;
+							}
+							//경사로 다 놓기 전에 값 바뀌면 끝
+							else if (vec[i][j + 1] != vec[i][j + 1 + k]) {
+								cntl = 1;
+								break;
+							}
+							else {
+								visited[i][j +1+ k] = 1;
+							}
+						}
+						//경사로 다 놓고 기준점 바꾸기
+						def = vec[i][j + 1];
+					}
+				}
+				else {
+					cntl = 1;
+					break;
+				}
+			}
+
+			if (cntl == 1) break;
+		}
+		if (cntl == 0) {
+			ans++;
+		}
+	}
+	cout << ans;
+
+
+	return 0;
+}
