@@ -1,0 +1,145 @@
+//상당히 복잡한 문제
+//집중해서 커브만 잘 생성하면 됨. 이게 어려울 뿐ㅋㅋ
+//시간 복잡도에서 걸릴 줄 알았는데 다행..
+
+#include <string>
+#include <algorithm>
+#include <iostream>
+#include <vector>
+#include <queue>;
+#include <set>
+using namespace std;
+//드래곤 커브
+int main() {
+
+	//시작점
+	//시작 방향
+	//세대
+
+	//크기가 1x1인 정사각형의 네 꼭짓점이 모두 드래곤 커브의 일부인 정사각형의 개수
+
+	//N - 드래곤 커브 개수
+	//x,y = 드래곤 커브 시작점 
+	//d = 시작 방향
+	//g = 세대
+	//드래곤 커브는 격자 밖으로 벗어나지 않는다.
+	//드래곤 커브는 서로 겹칠 수 있다.
+	int n;
+	int x, y, d, g;
+	cin >> n;
+	vector<vector<int>> vec;
+	vector<int> tmpvec;
+
+	for (int i = 0; i < n; i++) {
+		cin >> x >> y >> d >> g;
+		tmpvec.push_back(y);
+		tmpvec.push_back(x);
+		tmpvec.push_back(d);
+		tmpvec.push_back(g);
+		vec.push_back(tmpvec);
+		tmpvec.clear();
+	}
+
+	//방향(반시계)
+	//0 : x좌표가 증가하는 방향 (우)
+	//1 : y좌표가 감소하는 방향 (상)
+	//2 : x좌표가 감소하는 방향 (좌)
+	//3 : y좌표가 증가하는 방향 (하)
+
+	vector<vector<int>> visited(101, vector<int>(101, 0));
+	vector<int> check;
+	int size;
+	//낙서 시작
+	for (int i = 0; i < n; i++) {
+		check.push_back(vec[i][2]);
+		visited[vec[i][0]][vec[i][1]] = 1;
+		//0세대
+		switch (check[0])
+		{
+			//우
+		case 0:
+			vec[i][1]++;
+			visited[vec[i][0]][vec[i][1]] = 1;
+			break;
+			//상
+		case 1:
+			vec[i][0]--;
+			visited[vec[i][0]][vec[i][1]] = 1;
+			break;
+			//좌
+		case 2:
+			vec[i][1]--;
+			visited[vec[i][0]][vec[i][1]] = 1;
+			break;
+			//하  
+		case 3:
+			vec[i][0]++;
+			visited[vec[i][0]][vec[i][1]] = 1;
+			break;
+		default:
+			break;
+		}
+		//1 ~ n세대
+		for (int j = 0; j < vec[i][3]; j++) {
+			//뒤에서 부터 탐색
+			size = check.size()-1;
+			for (int k = size; k > -1; k--) {
+				switch (check[k]+1)
+				{
+					//상
+				case 1:
+					vec[i][0]--;
+					visited[vec[i][0]][vec[i][1]] = 1;
+					check.push_back(1);
+					break;
+					//좌 
+				case 2:
+					vec[i][1]--;
+					visited[vec[i][0]][vec[i][1]] = 1;
+					check.push_back(2);
+					break;
+					//하
+				case 3:
+					vec[i][0]++;
+					visited[vec[i][0]][vec[i][1]] = 1;
+					check.push_back(3);
+					break;  
+					//우
+				case 4:
+					vec[i][1]++;
+					visited[vec[i][0]][vec[i][1]] = 1;
+					check.push_back(0);
+					break;
+				default:
+					break;
+				}
+			}
+		}
+		check.clear();
+	}
+
+	//잘 생성됐는지 확인
+	/*for (int i = 0; i <10; i++) {
+		for (int j = 0; j < 10; j++) {
+			cout << visited[i][j];
+		}
+		cout << endl;
+	}*/
+
+	//사각형 찾기
+	int ans = 0;
+	for (int i = 0; i < visited.size(); i++) {
+		for (int j = 0; j < visited.size(); j++) {
+			if (visited[i][j] == 1) {
+				if (j + 1 < visited.size() && visited[i][j + 1] == 1
+					&& i + 1 < visited.size() && visited[i + 1][j] == 1
+					&& visited[i + 1][j + 1] == 1) {
+					ans++;
+				}
+			}
+		}
+	}
+
+	cout << ans;
+	return 0;
+}
