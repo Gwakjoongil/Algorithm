@@ -1,0 +1,153 @@
+//약간의 노가다 문제
+//문제 난이도 자체는 높지 않다.
+
+#include<iostream>
+#include <algorithm>
+#include <vector>
+#include <string>
+using namespace std;
+
+void rotationClock(vector<string>& vec, int num) {	
+	vec[num] = vec[num][7] + vec[num].substr(0, 7);
+}
+void rotationReverseClock(vector<string>& vec, int num) {
+	vec[num] = vec[num].substr(1, 7) + vec[num][0];
+}
+
+void checkDir(int rot, vector<string>& vec, int vecidx) {
+	//반대 방향으로 돌리기
+	if (rot == -1) rotationClock(vec, vecidx);
+	else rotationReverseClock(vec, vecidx);
+}
+int main()
+{
+	vector<string> vec;
+	string tmp;
+	//12시 방향부터 시계 방향 순
+	//극이 같으면 회전X
+	//극이 다르면 맞닿은 부분 반대로 회전
+
+	//점수(12시 방향의 N/S) : 1:(0/1), 2(0,2), 3(0,4), 4(0,8)
+	for (int i = 0; i < 4; i++) {
+		cin >> tmp;
+		vec.push_back(tmp);
+	}
+	//총 회전 횟수
+	int rot;
+	cin >> rot;
+
+	vector<int> rotnum;
+	int tmpnum;
+	vector<int> rotdir;//1(시계), -1(반시계)
+	int tmpdir;
+
+	for (int i = 0; i < rot; i++) {
+		cin >> tmpnum >> tmpdir;
+		rotnum.push_back(tmpnum);
+		rotdir.push_back(tmpdir);
+	}
+
+	int ans = 0;
+	//회전 시작
+	for (int i = 0; i < rot; i++) {
+		vector<int> check(3, 0);
+		//비교 번호는 각각 2, 6
+
+		//극 확인
+		if (vec[0][2] != vec[1][6]) {
+			check[0] = 1;
+		}
+		if (vec[1][2] != vec[2][6]) {
+			check[1] = 1;
+		}
+		if (vec[2][2] != vec[3][6]) {
+			check[2] = 1;
+		}
+
+		////처음은 무조건 회전
+		if (rotdir[i] == 1) rotationClock(vec, rotnum[i] - 1);
+		else rotationReverseClock(vec, rotnum[i] - 1);
+
+		switch (rotnum[i])
+		{
+		case 1:
+			//다음부터 회전의 반대 방향으로 회전
+			for (int j = 0; j < check.size(); j++) {
+				if (check[j] == 0) break;
+
+				if (rotdir[i] == 1) {
+					rotdir[i] -= 2;
+					rotationReverseClock(vec, j + 1);
+				}
+				else {
+					rotdir[i] += 2;
+					rotationClock(vec, j + 1);
+				}
+			}
+			break;
+		case 2:
+			if (check[0] == 1) {
+				checkDir(rotdir[i], vec, 0);
+			}
+			if (check[1] == 1) {
+				checkDir(rotdir[i], vec, 2);
+				if (check[2] == 1) {
+					//한번 더 바꾸기
+					if (rotdir[i] > 0) checkDir(-1, vec, 3);
+					else checkDir(1, vec, 3);
+				}
+			}
+			break;
+		case 3:
+			if (check[2] == 1) {
+				checkDir(rotdir[i], vec, 3);
+			}
+			if (check[1] == 1) {
+				checkDir(rotdir[i], vec, 1);
+				if (check[0] == 1) {
+					//한번 더 바꾸기
+					if (rotdir[i] > 0) checkDir(-1, vec, 0);
+					else checkDir(1, vec, 0);
+				}
+			}
+
+			break;
+		case 4:
+			//다음부터 회전의 반대 방향으로 회전
+			for (int j = check.size() - 1; j > -1; j--) {
+				if (check[j] == 0) break;
+
+				if (rotdir[i] == 1) {
+					rotdir[i] -= 2;
+					rotationReverseClock(vec, j);
+				}
+				else {
+					rotdir[i] += 2;
+					rotationClock(vec, j);
+				}
+			}
+			break;
+		default:
+			break;
+		}
+
+		/*cout << endl;
+		for (int i = 0; i < vec.size(); i++) {
+			cout << vec[i] << endl;
+		}*/
+	}
+	//cout << endl;
+	//점수(12시 방향의 N/S) : 1:(0/1), 2(0,2), 3(0,4), 4(0,8)
+	/*for (int i = 0; i < 4; i++) {
+		if (vec[i][0] == 1) {
+			ans+=
+		}
+	}*/
+	if (vec[0][0] == '1') ans += 1;
+	if (vec[1][0] == '1') ans += 2;
+	if (vec[2][0] == '1') ans += 4;
+	if (vec[3][0] == '1') ans += 8;
+
+	cout << ans;
+	return 0;
+}
