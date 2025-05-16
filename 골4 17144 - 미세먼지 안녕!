@@ -1,0 +1,145 @@
+//단순 구현
+//난이도 : 중하? (그냥 무지성 구현만 하면 됨)
+
+#include<iostream>
+#include <vector>
+#include <queue>
+#include <algorithm>
+#include <string>
+using namespace std;
+
+int main()
+{
+    int r, c, t;
+    cin >> r >> c >> t;
+
+    vector<vector<int>> vec;
+    vector<int> tmpvec;
+    int tmp;
+
+    for (int i = 0; i < r; i++) {
+        for (int j = 0; j < c; j++) {
+            cin >> tmp;
+            tmpvec.push_back(tmp);
+        }
+        vec.push_back(tmpvec);
+        tmpvec.clear();
+    }
+
+    //공기청정기 위치 찾기
+    vector<pair<int, int>> airCleaner;
+    for (int i = 0; i < r; i++) {
+        if (find(vec[i].begin(), vec[i].end(), -1) != vec[i].end()) {
+            airCleaner.push_back(make_pair(i,
+                find(vec[i].begin(), vec[i].end(), -1) - vec[i].begin()));
+        }
+    }
+
+
+    int dust;
+    for (int time = 0; time < t; time++) {
+        vector<vector<int>> tmpdust(r, vector<int>(c, 0));
+        for (int i = 0; i < vec.size(); i++) {
+            for (int j = 0; j < vec[i].size(); j++) {
+                //1. 미세먼지 확산(인접한 네 방향
+                if (vec[i][j] > 0 && vec[i][j] / 5 > 0) {
+                    dust = vec[i][j] / 5;
+
+
+                    //상인데 공기청정기인 경우
+                    if (i - 1 >= 0 && i - 1 == airCleaner[1].first && j == airCleaner[1].second) {
+                        vec[i][j] -= dust;
+                    }
+                    //상
+                    else if (i - 1 >= 0) {
+                        vec[i][j] -= dust;
+                        tmpdust[i - 1][j] += dust;
+                    }
+
+                    //하인데 공기청정기인 경우
+                    if (i + 1 < vec.size() && i + 1 == airCleaner[0].first && j == airCleaner[0].second) {
+                        vec[i][j] -= dust;
+                    }
+                    //하
+                    else if (i + 1 < vec.size()) {
+                        vec[i][j] -= dust;
+                        tmpdust[i + 1][j] += dust;
+                    }
+
+                    //우
+                    if (j + 1 < vec[i].size()) {
+
+                        vec[i][j] -= dust;
+                        tmpdust[i][j + 1] += dust;
+                    }
+
+                    //좌
+                    if (j - 1 >= 0) {
+                        if ((i == airCleaner[0].first && j - 1 == airCleaner[0].second)
+                            || (i == airCleaner[1].first && j - 1 == airCleaner[1].second)) continue;
+                            vec[i][j] -= dust;
+                            tmpdust[i][j - 1] += dust;
+                    }
+                }
+            }
+        }
+
+        for (int i = 0; i < r; i++) {
+            for (int j = 0; j < c; j++) {
+                vec[i][j] += tmpdust[i][j];
+            }
+        }
+
+
+        //반시계
+        //상 -> 하
+        for (int i = airCleaner[0].first-1; i > 0 ; i--) {
+            vec[i][0] = vec[i - 1][0];
+        }
+        //우 -> 좌
+        for (int i = 0; i < c-1; i++) {
+            vec[0][i] = vec[0][i + 1];
+        }
+        //하 -> 상
+        for (int i = 0; i < airCleaner[0].first; i++) {
+            vec[i][c - 1] = vec[i + 1][c - 1];
+        }
+        //좌 -> 우
+        for (int i = c - 1; i > 1; i--) {
+            vec[airCleaner[0].first][i] = vec[airCleaner[0].first][i - 1];
+        }
+        vec[airCleaner[0].first][1] = 0;
+
+        
+        //시계
+        //하 -> 상
+        for (int i = airCleaner[1].first+1; i < r-1; i++) {
+            vec[i][0] = vec[i + 1][0];
+        }
+        //우 -> 좌
+        for (int i = 0; i < c-1; i++) {
+            vec[r - 1][i] = vec[r - 1][i + 1];
+        }
+        //상 -> 하
+        for (int i = r-1; i > airCleaner[1].first; i--) {
+            vec[i][c - 1] = vec[i - 1][c - 1];
+        }
+        //좌 -> 우
+        for (int i = c - 1; i > 1; i--) {
+            vec[airCleaner[1].first][i] = vec[airCleaner[1].first][i - 1];
+        }
+        vec[airCleaner[1].first][1] = 0;
+        
+    }
+    int ans = 0;
+    for (int i = 0; i < r; i++) {
+        for (int j = 0; j < c; j++) {
+            if (vec[i][j] > 0) {
+                ans += vec[i][j];
+            }
+        }
+    }
+
+    cout << ans;
+    return 0;//정상종료시 반드시 0을 리턴해야합니다.
+}
