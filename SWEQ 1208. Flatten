@@ -1,0 +1,39 @@
+//입출력 잘보고 하자
+//엄청 쉬운 문젠데 입출력 익숙치 않아 시간 버린 문
+
+#include<iostream>
+#include <algorithm>
+#include <vector>
+using namespace std;
+
+int main(int argc, char** argv)
+{
+	int test_case;
+	
+    
+    int cnt, tmpval;
+    int maxidx, minidx, maxval, minval;
+	for(test_case = 1; test_case <= 10; ++test_case)
+	{
+        vector<int> vec;
+        cin>>cnt;
+        for(int i=0;i<100;i++){
+        	cin>>tmpval;
+            vec.push_back(tmpval);
+        }
+        
+        for(int i=0;i<cnt;i++){
+        	maxidx = max_element(vec.begin(), vec.end()) - vec.begin();
+            minidx = min_element(vec.begin(), vec.end()) - vec.begin();
+            if(maxidx==minidx) break;
+            else if(vec[maxidx] - vec[minidx] == 1) break;
+            
+            vec[maxidx]--;
+            vec[minidx]++;
+        }
+        maxval = *max_element(vec.begin(), vec.end());
+        minval = *min_element(vec.begin(), vec.end());
+		cout<<"#"<<test_case<<" "<<maxval-minval<<"\n";
+	}
+	return 0;//정상종료시 반드시 0을 리턴해야합니다.
+}
